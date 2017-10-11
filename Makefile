@@ -53,9 +53,12 @@ export AR	=	$(GCC_BUILD_ENV)$(GCC_BIN_PATH)arm-none-eabi-ar.exe
 export TARGET_LIBRARY_NAME_7 = toolchaingen7
 export TARGET_LIBRARY_NAME_9 = toolchaingen9
 export TOOLCHAIN_LIBRARY_SRCPATH = $(GCC_BUILD_ENV)arm-none-eabi
-export DIRLIBS_SHARED =	-I	"$(TOOLCHAIN_LIBRARY_SRCPATH)/include"
-export TARGET_LIBRARY_PATH =	$(TOOLCHAIN_LIBRARY_SRCPATH)/lib/toolchain_generic
-export LIBPATH	= 	$(TOOLCHAIN_LIBRARY_SRCPATH)/lib/
+export TOOLCHAIN_PATH	= 	$(TOOLCHAIN_LIBRARY_SRCPATH)/lib/
+export LIBPATH	=	$(TOOLCHAIN_PATH)newlib-nano-2.1-nds
+export DIRLIBS_PROHIBITED =	"$(TOOLCHAIN_LIBRARY_SRCPATH)/include"
+export DIRLIBS_ALLOWED =	-I "$(TOOLCHAIN_PATH)newlib-nano-2.1-nds/include/"	-I "$(TOOLCHAIN_PATH)newlib-nano-2.1-nds/newlib-nds-headers/" -I "$(TOOLCHAIN_PATH)newlib-nano-2.1-nds/newlib-nds-headers/bits/" -I "$(TOOLCHAIN_PATH)newlib-nano-2.1-nds/newlib-nds-headers/machine/" -I "$(TOOLCHAIN_PATH)newlib-nano-2.1-nds/newlib-nds-headers/sys/"
+export TARGET_LIBRARY_PATH =	$(TOOLCHAIN_LIBRARY_SRCPATH)/lib/newlib-nano-2.1-nds
+export LIBPATHNEWLIB	= 	$(TOOLCHAIN_LIBRARY_SRCPATH)/lib/newlib-nano-2.1-nds/
 export TARGET_LIBRARY_LINKER_SRC = /linkers
 export TARGET_LIBRARY_CRT0_FILE_7 = nds_arm_ld_crt0
 export TARGET_LIBRARY_CRT0_FILE_9 = nds_arm_ld_crt0
@@ -85,17 +88,22 @@ export DIRS_ARM7_SRC = source/	\
 			../common/
 			
 export DIRS_ARM7_HEADER = source/	\
+			source/interrupts/	\
 			include/	\
 			../common/
 #####################################################ARM9#####################################################
 
 export DIRS_ARM9_SRC = source/	\
-			source/gui/	\
 			source/interrupts/	\
+			source/gui/	\
+			source/wnifilib/	\
+			source/zip/	\
 			../common/
 			
 export DIRS_ARM9_HEADER = include/	\
 			source/gui/	\
+			source/wnifilib/	\
+			source/zip/	\
 			../common/
 
 #cleanup default C/C++/ASM flags
@@ -106,6 +114,7 @@ export ASFLAGS	=''
 
 # Build Target(s)	(both processors here)
 all: $(EXECUTABLE_FNAME)
+#all:	debug
 
 #ignore building this
 .PHONY: $(ELF_ARM7)	$(ELF_ARM9)
