@@ -61,11 +61,6 @@ int main(int _argc, sint8 **_argv) {
 	GUI_init(project_specific_console);
 	GUI_clear();
 	
-	//Init DS Firmware Settings
-	while(getFWSettingsstatus() == false){
-		IRQVBlankWait();
-	}
-	
 	sint32 fwlanguage = (sint32)getLanguage();
 	
 	int ret=FS_init();
