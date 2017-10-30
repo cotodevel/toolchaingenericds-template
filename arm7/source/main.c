@@ -37,8 +37,6 @@ int main(int _argc, sint8 **_argv) {
 	// Block execution until we get control of vram D
 	while (!(*((vuint8*)0x04000240) & 0x2));
 	
-	//Read DHCP settings (in order)
-	LoadFirmwareSettingsFromFlash();
 	installWifiFIFO();
 	
     while (1) {
