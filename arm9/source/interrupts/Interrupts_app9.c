@@ -26,28 +26,45 @@ USA
 #include "keypad.h"
 
 
-
+//User Handler Definitions
+#ifdef ARM9
 __attribute__((section(".itcm")))
-void Vcounter(){
-	
-	//printf("vcount! \n");
+#endif
+void Timer0handlerUser(){
 }
 
-
-//---------------------------------------------------------------------------------
+#ifdef ARM9
 __attribute__((section(".itcm")))
-void Vblank() {
-//---------------------------------------------------------------------------------
-	//key event between frames
-	do_keys();
-	
-	//printf("vblank! \n");	
+#endif
+void Timer1handlerUser(){
 }
 
-//---------------------------------------------------------------------------------
+#ifdef ARM9
 __attribute__((section(".itcm")))
-void Hblank() {
-//---------------------------------------------------------------------------------
-	
-    //printf("hblank! \n");
+#endif
+void Timer2handlerUser(){
+}
+
+#ifdef ARM9
+__attribute__((section(".itcm")))
+#endif
+void Timer3handlerUser(){
+}
+
+#ifdef ARM9
+__attribute__((section(".itcm")))
+#endif
+void HblankUser(){
+}
+
+#ifdef ARM9
+__attribute__((section(".itcm")))
+#endif
+void VblankUser(){
+}
+
+#ifdef ARM9
+__attribute__((section(".itcm")))
+#endif
+void VcounterUser(){
 }

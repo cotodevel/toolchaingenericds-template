@@ -27,23 +27,45 @@ USA
 #include "wifi_arm7.h"
 #include "main.h"
 
-void Timer1handler(){
-	
+//User Handler Definitions
+#ifdef ARM9
+__attribute__((section(".itcm")))
+#endif
+void Timer0handlerUser(){
 }
 
-//
-
-void Vcounter(){
-	doSPIARM7IO();
+#ifdef ARM9
+__attribute__((section(".itcm")))
+#endif
+void Timer1handlerUser(){
 }
 
-//
-
-void Vblank() {
-	Wifi_Update();
+#ifdef ARM9
+__attribute__((section(".itcm")))
+#endif
+void Timer2handlerUser(){
 }
 
-//
+#ifdef ARM9
+__attribute__((section(".itcm")))
+#endif
+void Timer3handlerUser(){
+}
 
-void Hblank() {
+#ifdef ARM9
+__attribute__((section(".itcm")))
+#endif
+void HblankUser(){
+}
+
+#ifdef ARM9
+__attribute__((section(".itcm")))
+#endif
+void VblankUser(){
+}
+
+#ifdef ARM9
+__attribute__((section(".itcm")))
+#endif
+void VcounterUser(){
 }
