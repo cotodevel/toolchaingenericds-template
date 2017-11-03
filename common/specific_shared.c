@@ -49,71 +49,11 @@ __attribute__((section(".itcm")))
 #endif
 void HandleFifoNotEmptyWeakRef(uint32 cmd1,uint32 cmd2,uint32 cmd3,uint32 cmd4){
 	
-	switch (cmd1) {		
-		//Shared 
-		case(WIFI_SYNC):{
-			Wifi_Sync();
-		}
-		break;
-		
-		//Process the packages (signal) that sent earlier FIFO_SEND_EXT
-		case(FIFO_SOFTFIFO_READ_EXT):{
-		
-		}
-		break;
-		
-		case(FIFO_SOFTFIFO_WRITE_EXT):{
-			SetSoftFIFO(cmd2);
-		}
-		break;
-		
-		
-		//ARM7 command handler
-		#ifdef ARM7
-		
-		//ARM7 Only
-		case(FIFO_POWERCNT_ON):{
-			powerON((uint16)cmd2);
-		}
-		break;
-		
-		case (FIFO_POWERMGMT_WRITE):{
-			PowerManagementDeviceWrite(PM_SOUND_AMP, (int)cmd2>>16);  // void * data == command2
-		}
-		break;
-		
-		//arm9 wants to send a WIFI context block address / userdata is always zero here
-		case(WIFI_STARTUP):{
-			//	wifiAddressHandler( void * address, void * userdata )
-			wifiAddressHandler((Wifi_MainStruct *)(uint32)cmd2, 0);
-		}
-		break;
-		
-		#endif
-		
-		
-		
-		//ARM9 command handler
-		#ifdef ARM9
-		//exception handler: arm7
-		case(EXCEPTION_ARM7):{
-			
-			if((uint32)cmd2 == (uint32)unexpectedsysexit_7){
-				exception_handler((uint32)unexpectedsysexit_7);	//r0 = EXCEPTION_ARM7 / r1 = unexpectedsysexit_7
-			}
-		}
-		break;
-		
-		
-		#endif
-	
-		
-	}
-	
 }
 
 #ifdef ARM9
 __attribute__((section(".itcm")))
 #endif
 void HandleFifoEmptyWeakRef(uint32 cmd1,uint32 cmd2,uint32 cmd3,uint32 cmd4){
+	
 }
