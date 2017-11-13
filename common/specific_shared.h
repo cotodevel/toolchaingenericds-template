@@ -19,13 +19,13 @@ USA
 
 */
 
-//inherits what is defined in: common_shared.h
+//inherits what is defined in: ipcfifo.h
 #ifndef __specific_shared_h__
 #define __specific_shared_h__
 
 #include "dsregs.h"
 #include "dsregs_asm.h"
-#include "common_shared.h"
+#include "ipcfifo.h"
 	
 //---------------------------------------------------------------------------------
 typedef struct sSpecificIPC {
