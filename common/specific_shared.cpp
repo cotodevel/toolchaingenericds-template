@@ -42,6 +42,11 @@ USA
 
 #endif
 
+//Coto: Hardware IPC struct packed 
+struct sIPCSharedTGDSSpecific* getsIPCSharedTGDSSpecific(){
+	struct sIPCSharedTGDSSpecific* sIPCSharedTGDSSpecificInst = (__attribute__((packed)) struct sIPCSharedTGDSSpecific*)(getUserIPCAddress());
+	return sIPCSharedTGDSSpecificInst;
+}
 
 //inherits what is defined in: common_shared.c
 #ifdef ARM9
