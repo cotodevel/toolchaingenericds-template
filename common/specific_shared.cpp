@@ -19,6 +19,8 @@ USA
 
 */
 
+//TGDS required version: IPC Version: 1.3
+
 #include "ipcfifo.h"
 #include "specific_shared.h"
 #include "dsregs.h"
