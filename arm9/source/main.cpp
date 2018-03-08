@@ -17,6 +17,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301
 USA
 
 */
+//C++ part
+#include <iostream>
+using namespace std;
+#include <iostream>
+#include <list>
+#include <vector>
 
 #include "socket.h"
 #include "in.h"
@@ -72,11 +78,36 @@ int main(int _argc, sint8 **_argv) {
 	{
 		printf("FS Init error.");
 	}
+	printf("Dldi Name: %s",dldi_tryingInterface());
 	
 	while (1)
 	{
 		if (keysPressed() & KEY_A){
-			printf("test:%d",rand()&0xff);
+			printf("mylist should contain:1 10 20 30 30 20 2 3 4 5");
+			std::list<int> mylist;
+			std::list<int>::iterator it;
+			// set some initial values:
+			for (int i=1; i<=5; ++i) mylist.push_back(i); // 1 2 3 4 5
+
+			it = mylist.begin();
+			++it;       // it points now to number 2           ^
+
+			mylist.insert (it,10);                        // 1 10 2 3 4 5
+
+			// "it" still points to number 2                      ^
+			mylist.insert (it,2,20);                      // 1 10 20 20 2 3 4 5
+
+			--it;       // it points now to the second 20            ^
+
+			std::vector<int> myvector (2,30);
+			mylist.insert (it,myvector.begin(),myvector.end());
+													// 1 10 20 30 30 20 2 3 4 5
+													//               ^
+			for (it=mylist.begin(); it!=mylist.end(); ++it){
+				printf("%d-",*it);
+			}
+			
+			while(keysPressed() & KEY_A){}
 		}
 		
 		if (keysPressed() & KEY_B){
