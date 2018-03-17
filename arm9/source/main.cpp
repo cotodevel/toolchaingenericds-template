@@ -18,7 +18,6 @@ USA
 
 */
 //C++ part
-#include <iostream>
 using namespace std;
 #include <iostream>
 #include <list>
