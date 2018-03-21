@@ -21,6 +21,7 @@ USA
 //C++ part
 using namespace std;
 #include <iostream>
+#include <fstream>
 #include <list>
 #include <vector>
 #include <cmath>
@@ -173,11 +174,16 @@ void display2(myclass2 &ob)
 	printf("%d",ob.getval());
 }
 
+string ToStr( char c ) {
+   return string( 1, c );
+}
+
 void menuShow(){
 	printf("Dldi Name: %s",dldi_tryingInterface());
 	printf("Test homebrew: A test0");
 	printf("Test homebrew: B test1,test2,test3");
 	printf("Test homebrew: X test4");
+	printf("Test homebrew: Y fsfat:/testfile.txt");
 	printf("Select: clearscreen");
 }
 
@@ -266,6 +272,44 @@ int main(int _argc, sint8 **_argv) {
 			myclass2 a(10);
 			display2(a);
 			while(keysPressed() & KEY_X){}
+		}
+		
+		if (keysPressed() & KEY_Y){
+		
+			char InFile[80];  // input file name
+			char ch;
+			
+			ifstream InStream;
+			std::string someString;
+			
+			sprintf(InFile,"%s%s",getfatfsPath((char*)""),"testfile.txt");
+			
+			// Open file for input
+			// in.open(fin); also works
+			InStream.open(InFile, ios::in);
+
+			// ensure file is opened successfully
+			if(!InStream)
+			{
+				printf("Error open file %s",InFile);
+				//return 1;
+			}
+			else{
+				printf("OK open file %s",InFile);
+			}
+			
+			// Read in each character until eof character is read.
+			// Output it to screen.
+			int somePosition = 0;
+			while (!InStream.eof()) {
+				//Read each character.
+				InStream.get(ch);
+				someString.insert(somePosition, ToStr(ch));
+				somePosition++;
+			}
+			InStream.close();
+			printf("testfile.txt:%s",someString.c_str());
+			while(keysPressed() & KEY_Y){}
 		}
 		
 		if (keysPressed() & KEY_SELECT){
