@@ -17,11 +17,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301
 USA
 
 */
+
 //C++ part
 using namespace std;
 #include <iostream>
 #include <list>
 #include <vector>
+#include <cmath>
+#include <cstdlib>
+#include <cstdio>
 
 #include "socket.h"
 #include "in.h"
@@ -58,6 +62,125 @@ using namespace std;
 #include "keypadTGDS.h"
 #include "guiTGDS.h"
 
+//test1
+//default class instance
+class cl {
+  int i; // private by default
+public:
+  int get_i();
+  void put_i(int j);
+};
+
+int cl::get_i()
+{
+  return i;
+}
+
+void cl::put_i(int j)
+{
+  i = j;
+}
+
+//test2
+//constructor example
+// Class to represent a box
+class Box
+{
+  public:
+    int length = 0;
+    int breadth = 0;
+    int height = 0;
+
+    // Constructor
+    Box(int lengthValue, int breadthValue, int heightValue)
+    {
+      printf("Box constructor called");
+      length = lengthValue;
+      breadth = breadthValue;
+      height = heightValue;
+    }
+
+    // Function to calculate the volume of a box
+    int volume()
+    {
+      return length * breadth * height;
+    }
+};
+
+//test 3
+//class copy
+class myclass {
+  int *p;
+public:
+  myclass(int i);
+  ~myclass();
+  int getval() { return *p; }
+};
+
+myclass::myclass(int i)
+{
+  printf("Allocating p");
+  p = new int;
+  if(!p) {
+    printf("Allocation failure.");
+    exit(1); // exit program if out of memory
+  }
+  *p = i;
+}
+
+myclass::~myclass()
+{
+  printf("Freeing p");
+  delete p;
+}
+
+// when this function is called, the copy constructor is called
+void display(myclass ob)
+{
+	printf("%d",ob.getval());
+}
+
+
+//test4
+class myclass2 {
+  int *p;
+public:
+  myclass2(int i);
+  ~myclass2();
+  int getval() { return *p; }
+};
+
+myclass2::myclass2(int i)
+{
+	printf("Allocating p");
+	p = new int;
+	if(!p) {
+		printf("Allocation failure.");
+		exit(1); // exit program if out of memory
+	}
+	*p = i;
+}
+
+// use destructor to free memory
+myclass2::~myclass2()
+{
+  printf("Freeing p");
+  delete p;
+}
+
+void display2(myclass2 &ob)
+{
+	printf("%d",ob.getval());
+}
+
+void menuShow(){
+	printf("Dldi Name: %s",dldi_tryingInterface());
+	printf("Test homebrew: A test0");
+	printf("Test homebrew: B test1,test2,test3");
+	printf("Test homebrew: X test4");
+	printf("Select: clearscreen");
+}
+
 int main(int _argc, sint8 **_argv) {
 	
 	IRQInit();
@@ -77,7 +200,7 @@ int main(int _argc, sint8 **_argv) {
 	{
 		printf("FS Init error.");
 	}
-	printf("Dldi Name: %s",dldi_tryingInterface());
+	menuShow();
 	
 	while (1)
 	{
@@ -110,7 +233,44 @@ int main(int _argc, sint8 **_argv) {
 		}
 		
 		if (keysPressed() & KEY_B){
+			/*	//float printf support: todo
+			// sqrtf() is a library function to calculate square root
+			float number = 5.0, squareRoot = 0.0;
+			squareRoot = sqrtf(number);
+			printf("float:Square root of %f=%f",number,squareRoot);
+			
+			double number2 = 4.0, squareRoot2 = 0.0;
+			squareRoot = sqrt(number2);
+			printf("double:Square root of %lf=%lf",number,squareRoot);
+			*/
+
+			cl s;
+
+			s.put_i(10);
+			printf("Test1:res:%d",s.get_i());
+			
+			//test constructor
+			Box BoxInst(20,20,80);
+			printf("Test2:Box Test:%d",BoxInst.volume());
+			
+			//copy constructor
+			printf("Test3: Constructor");
+			myclass a(10);
+			display(a);
+			
+			while(keysPressed() & KEY_B){}
+		}
+		
+		if (keysPressed() & KEY_X){
+			printf("Test4: Destructor");
+			myclass2 a(10);
+			display2(a);
+			while(keysPressed() & KEY_X){}
+		}
+		
+		if (keysPressed() & KEY_SELECT){
 			GUI_clear();
+			menuShow();
 		}
 		
 		IRQVBlankWait();
