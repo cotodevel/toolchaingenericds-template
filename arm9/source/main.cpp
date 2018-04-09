@@ -183,8 +183,9 @@ void menuShow(){
 	printf("Test homebrew: A test0");
 	printf("Test homebrew: B test1,test2,test3");
 	printf("Test homebrew: X test4");
-	printf("Test homebrew: Y fsfat:/testfile.txt");
+	printf("Test homebrew: Y fsfat:/filelist.txt");
 	printf("Select: clearscreen");
+	printf("Start: write rootfileList to 0:/filelist.txt");
 }
 
 int main(int _argc, sint8 **_argv) {
@@ -282,7 +283,7 @@ int main(int _argc, sint8 **_argv) {
 			ifstream InStream;
 			std::string someString;
 			
-			sprintf(InFile,"%s%s",getfatfsPath((char*)""),"testfile.txt");
+			sprintf(InFile,"%s%s",getfatfsPath((char*)""),"filelist.txt");
 			
 			// Open file for input
 			// in.open(fin); also works
@@ -314,7 +315,30 @@ int main(int _argc, sint8 **_argv) {
 		
 		if (keysPressed() & KEY_SELECT){
 			GUI_clear();
-			menuShow();
+		}
+		
+		if (keysPressed() & KEY_START){
+			
+			std::string filelogout = string(getfatfsPath("filelist.txt"));
+			std::ofstream outfile (filelogout,std::ofstream::binary);
+			
+			char fname[MAX_TGDSFILENAME_LENGTH+1] = {0};
+			int retf = FAT_FindFirstFile(fname);
+			//if(retf == FT_NONE) printf("FAT_FindFirstFile:invalid dir");
+			//if(retf == FT_FILE) printf("FAT_FindFirstFile:file:%s",fname);
+			//if(retf == FT_DIR) printf("FAT_FindFirstFile:dir:%s",fname);
+			
+			while(retf != FT_NONE){
+				char fname2[MAX_TGDSFILENAME_LENGTH+1] = {0};
+				retf = FAT_FindNextFile(fname2);
+				if(retf != FT_NONE) { 
+					std::string Filename = string(fname2);
+					outfile << Filename << endl;
+				}
+			}
+			outfile.close();
+			printf("filelist %s saved.",filelogout.c_str());
+			while(keysPressed() & KEY_START){}
 		}
 		
 		IRQVBlankWait();
