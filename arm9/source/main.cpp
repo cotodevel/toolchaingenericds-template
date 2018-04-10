@@ -56,7 +56,7 @@ using namespace std;
 #include "utilsTGDS.h"
 
 #include "devoptab_devices.h"
-#include "fsfatlayerTGDS.h"
+#include "fsfatlayerTGDSNew.h"
 #include "usrsettingsTGDS.h"
 
 #include "videoTGDS.h"
