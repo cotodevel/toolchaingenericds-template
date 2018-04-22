@@ -372,6 +372,31 @@ int main(int _argc, sint8 **_argv) {
 			while(keysPressed() & KEY_START){}
 		}
 		
+		
+		if (keysPressed() & KEY_L){
+			std::string someFile = string("somefile.txt");
+			if(FAT_FileExists((char*)someFile.c_str()) != FT_NONE){
+				printf("%s exists!",someFile.c_str());
+			}
+			else{
+				printf("%s NOT exists!",someFile.c_str());
+			}
+		
+			while(keysPressed() & KEY_L){}
+		}
+		
+		if (keysPressed() & KEY_R){
+			std::string someFile = string(getfatfsPath("filelist.txt"));
+			if(FAT_FileExists((char*)someFile.c_str()) != FT_NONE){
+				printf("%s exists!",someFile.c_str());
+			}
+			else{
+				printf("%s NOT exists!",someFile.c_str());
+			}
+		
+			while(keysPressed() & KEY_R){}
+		}
+		
 		IRQVBlankWait();
 	}
 
