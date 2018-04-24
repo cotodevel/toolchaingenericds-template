@@ -24,6 +24,18 @@ USA
 #include "typedefsTGDS.h"
 #include "dsregs.h"
 
+#ifdef __cplusplus
+//C++ part
+using namespace std;
+#include <iostream>
+#include <fstream>
+#include <list>
+#include <vector>
+#include <cmath>
+#include <cstdlib>
+#include <cstdio>
+#endif
+
 #endif
 
 
@@ -32,6 +44,10 @@ extern "C" {
 #endif
 
 extern int main(int _argc, sint8 **_argv);
+
+#ifdef __cplusplus
+extern std::string getDldiDefaultPath();
+#endif
 
 #ifdef __cplusplus
 }

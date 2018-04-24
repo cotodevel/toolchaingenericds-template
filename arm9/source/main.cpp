@@ -63,6 +63,7 @@ using namespace std;
 #include "videoTGDS.h"
 #include "keypadTGDS.h"
 #include "guiTGDS.h"
+#include "dldi.h"
 
 //test1
 //default class instance
@@ -179,14 +180,18 @@ string ToStr( char c ) {
    return string( 1, c );
 }
 
+std::string getDldiDefaultPath(){
+	std::string dldiOut = string((char*)getfatfsPath( (sint8*)string(dldi_tryingInterface() + string(".dldi")).c_str() ));
+	return dldiOut;
+}
+
 void menuShow(){
-	printf("Dldi Name: %s",dldi_tryingInterface());
-	printf("Test homebrew: A test0");
-	printf("Test homebrew: B test1,test2,test3");
-	printf("Test homebrew: X test4");
-	printf("Test homebrew: Y fsfat:/filelist.txt");
 	printf("Select: clearscreen");
-	printf("Start: write rootfileList to 0:/filelist.txt");
+	printf("Read File: Y 0:/filelist.txt");
+	printf("Write File: rootfileList to 0:/filelist.txt");
+	printf("L: dump dldi file from memory");
+	printf("	to %s",getDldiDefaultPath().c_str());
+	
 }
 
 //customHandler 
@@ -242,6 +247,7 @@ int main(int _argc, sint8 **_argv) {
 	
 	while (1)
 	{
+		/*
 		if (keysPressed() & KEY_A){
 			printf("mylist should contain:1 10 20 30 30 20 2 3 4 5");
 			std::list<int> mylist;
@@ -271,16 +277,15 @@ int main(int _argc, sint8 **_argv) {
 		}
 		
 		if (keysPressed() & KEY_B){
-			/*	//float printf support: todo
+			//	//float printf support: todo
 			// sqrtf() is a library function to calculate square root
-			float number = 5.0, squareRoot = 0.0;
-			squareRoot = sqrtf(number);
-			printf("float:Square root of %f=%f",number,squareRoot);
+			//float number = 5.0, squareRoot = 0.0;
+			//squareRoot = sqrtf(number);
+			//printf("float:Square root of %f=%f",number,squareRoot);
 			
-			double number2 = 4.0, squareRoot2 = 0.0;
-			squareRoot = sqrt(number2);
-			printf("double:Square root of %lf=%lf",number,squareRoot);
-			*/
+			//double number2 = 4.0, squareRoot2 = 0.0;
+			//squareRoot = sqrt(number2);
+			//printf("double:Square root of %lf=%lf",number,squareRoot);
 
 			cl s;
 
@@ -305,7 +310,7 @@ int main(int _argc, sint8 **_argv) {
 			display2(a);
 			while(keysPressed() & KEY_X){}
 		}
-		
+		*/
 		if (keysPressed() & KEY_Y){
 		
 			char InFile[80];  // input file name
@@ -372,29 +377,20 @@ int main(int _argc, sint8 **_argv) {
 			while(keysPressed() & KEY_START){}
 		}
 		
-		
 		if (keysPressed() & KEY_L){
-			std::string someFile = string("somefile.txt");
-			if(FAT_FileExists((char*)someFile.c_str()) != FT_NONE){
-				printf("%s exists!",someFile.c_str());
+			
+			DLDI_INTERFACE* dldiInterface = dldiGet();
+			
+			uint8 * dldiStart = (uint8 *)dldiInterface;
+			int dldiSize = (int)pow((double)2, (double)dldiInterface->driverSize);
+			FILE * fh = fopen(getDldiDefaultPath().c_str(),"w+");
+			if(fh){
+				fwrite(dldiStart, 1, dldiSize, fh);
+				fclose(fh);
+				printf("%s exported.",getDldiDefaultPath().c_str());
+				printf("%d bytes",dldiSize);
 			}
-			else{
-				printf("%s NOT exists!",someFile.c_str());
-			}
-		
 			while(keysPressed() & KEY_L){}
-		}
-		
-		if (keysPressed() & KEY_R){
-			std::string someFile = string(getfatfsPath("filelist.txt"));
-			if(FAT_FileExists((char*)someFile.c_str()) != FT_NONE){
-				printf("%s exists!",someFile.c_str());
-			}
-			else{
-				printf("%s NOT exists!",someFile.c_str());
-			}
-		
-			while(keysPressed() & KEY_R){}
 		}
 		
 		IRQVBlankWait();
