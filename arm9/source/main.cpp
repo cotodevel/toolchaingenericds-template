@@ -222,6 +222,7 @@ void CustomDebugHandler(){
 
 int main(int _argc, sint8 **_argv) {
 	
+	/*			TGDS 1.4 Standard ARM9 Init code start	*/
 	IRQInit();
 	
 	bool project_specific_console = false;	//set default console or custom console: default console
@@ -239,6 +240,8 @@ int main(int _argc, sint8 **_argv) {
 	{
 		printf("FS Init error.");
 	}
+	/*			TGDS 1.4 Standard ARM9 Init code end	*/
+	
 	
 	//custom Handler
 	setupCustomExceptionHandler((uint32*)&CustomDebugHandler);
