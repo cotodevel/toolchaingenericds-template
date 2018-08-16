@@ -64,6 +64,7 @@ using namespace std;
 #include "keypadTGDS.h"
 #include "guiTGDS.h"
 #include "dldi.h"
+#include "SpecialFunctions.h"
 
 //test1
 //default class instance
@@ -185,12 +186,14 @@ std::string getDldiDefaultPath(){
 	return dldiOut;
 }
 
+
 void menuShow(){
 	printf("Select: clearscreen");
 	printf("Read File: Y 0:/filelist.txt");
 	printf("Write File: rootfileList to 0:/filelist.txt");
 	printf("L: dump dldi file from memory");
 	printf("	to %s",getDldiDefaultPath().c_str());
+	printf("UP: get function size demo");
 	
 }
 
@@ -378,6 +381,17 @@ int main(int _argc, sint8 **_argv) {
 			outfile.close();
 			printf("filelist %s saved.",filelogout.c_str());
 			while(keysPressed() & KEY_START){}
+		}
+		
+		if (keysPressed() & KEY_UP){
+			int f1Size = SIZEOF_FUNCTION(my_function1);
+			int f2Size = SIZEOF_FUNCTION(my_function2);
+			int res1 = my_function1(16, 4);
+			int res2 = my_function2(16, 4);
+		   
+			printf("%d : Size of my_function1: %d \n",res1, f1Size);
+			printf("%d : Size of my_function2: %d \n",res2, f2Size);
+			
 		}
 		
 		if (keysPressed() & KEY_L){
