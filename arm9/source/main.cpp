@@ -65,6 +65,10 @@ using namespace std;
 #include "guiTGDS.h"
 #include "dldi.h"
 #include "SpecialFunctions.h"
+#include "dmaTGDS.h"
+#include "biosTGDS.h"
+#include "nds_cp15_misc.h"
+#include "notifierProcessor.h"
 
 //test1
 //default class instance
@@ -249,6 +253,9 @@ int main(int _argc, sint8 **_argv) {
 	//custom Handler
 	setupCustomExceptionHandler((uint32*)&CustomDebugHandler);
 	
+	InitializeThreads();
+	printf("InitializeThreads ok");
+	
 	menuShow();
 	
 	while (1)
@@ -359,6 +366,17 @@ int main(int _argc, sint8 **_argv) {
 			GUI_clear();
 		}
 		
+		if (keysPressed() & KEY_DOWN){
+			int f1Size = SIZEOF_FUNCTION(my_function1);
+			int f2Size = SIZEOF_FUNCTION(my_function2);
+			int res1 = my_function1(16, 4);
+			int res2 = my_function2(16, 4);
+		   
+			struct notifierProcessorHandlerQueued procrResponse = RunFunctionExtProcessor(16, 4, 88, 99, (u32*) &my_function1, f1Size);
+			printf("RunFunctionExtProcessor: %d ", (int)procrResponse.notifierStatus);
+			while(keysPressed() & KEY_DOWN){}
+		}
+		
 		if (keysPressed() & KEY_START){
 			std::string filelogout = string(getfatfsPath("filelist.txt"));
 			std::ofstream outfile (filelogout,std::ofstream::binary);
@@ -383,21 +401,8 @@ int main(int _argc, sint8 **_argv) {
 			while(keysPressed() & KEY_START){}
 		}
 		
-		if (keysPressed() & KEY_UP){
-			int f1Size = SIZEOF_FUNCTION(my_function1);
-			int f2Size = SIZEOF_FUNCTION(my_function2);
-			int res1 = my_function1(16, 4);
-			int res2 = my_function2(16, 4);
-		   
-			printf("%d : Size of my_function1: %d \n",res1, f1Size);
-			printf("%d : Size of my_function2: %d \n",res2, f2Size);
-			
-		}
-		
 		if (keysPressed() & KEY_L){
-			
 			DLDI_INTERFACE* dldiInterface = dldiGet();
-			
 			uint8 * dldiStart = (uint8 *)dldiInterface;
 			int dldiSize = (int)pow((double)2, (double)dldiInterface->driverSize);
 			FILE * fh = fopen(getDldiDefaultPath().c_str(),"w+");
