@@ -34,8 +34,6 @@ USA
 #include "dsregs.h"
 #include "consoleTGDS.h"
 #include "biosTGDS.h"
-
-#include "console_str.h"
 #include "InterruptsARMCores_h.h"
 #include "dmaTGDS.h"
 

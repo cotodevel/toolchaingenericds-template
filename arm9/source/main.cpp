@@ -62,7 +62,6 @@ using namespace std;
 
 #include "videoTGDS.h"
 #include "keypadTGDS.h"
-#include "guiTGDS.h"
 #include "dldi.h"
 #include "SpecialFunctions.h"
 #include "dmaTGDS.h"
@@ -346,19 +345,21 @@ int main(int _argc, sint8 **_argv) {
 			}
 			else{
 				printf("OK open file %s",InFile);
+				
+				// Read in each character until eof character is read.
+				// Output it to screen.
+				int somePosition = 0;
+				while (!InStream.eof()) {
+					//Read each character.
+					InStream.get(ch);
+					someString.insert(somePosition, ToStr(ch));
+					somePosition++;
+				}
+				InStream.close();
+				printf("->%s",someString.c_str());
 			}
 			
-			// Read in each character until eof character is read.
-			// Output it to screen.
-			int somePosition = 0;
-			while (!InStream.eof()) {
-				//Read each character.
-				InStream.get(ch);
-				someString.insert(somePosition, ToStr(ch));
-				somePosition++;
-			}
-			InStream.close();
-			printf("testfile.txt:%s",someString.c_str());
+			
 			while(keysPressed() & KEY_Y){}
 		}
 		
