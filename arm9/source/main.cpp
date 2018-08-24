@@ -47,6 +47,7 @@ using namespace std;
 #include "specific_shared.h"
 #include "ff.h"
 #include "memoryHandleTGDS.h"
+#include "fileHandleTGDS.h"
 #include "reent.h"
 #include "sys/types.h"
 #include "dsregs.h"
@@ -56,7 +57,7 @@ using namespace std;
 #include "utilsTGDS.h"
 
 #include "devoptab_devices.h"
-#include "fsfatlayerTGDSNew.h"
+#include "fsfatlayerTGDS.h"
 #include "usrsettingsTGDS.h"
 #include "exceptionTGDS.h"
 
@@ -384,19 +385,23 @@ int main(int _argc, sint8 **_argv) {
 			char fname[MAX_TGDSFILENAME_LENGTH+1] = {0};
 			int retf = FAT_FindFirstFile(fname);
 			while(retf != FT_NONE){
+				//directory?
+				if(retf == FT_DIR){
+					struct FileClass * fileClassInst = getFileClass(LastDirEntry);
+					sprintf(fname,"%s/<dir>",fileClassInst->fd_namefullPath);
+				}
+				//file?
+				else if(retf == FT_DIR){
+					struct FileClass * fileClassInst = getFileClass(LastDirEntry);
+					sprintf(fname,"%s/",fileClassInst->fd_namefullPath);
+				}
 				std::string Filename = string(fname);
 				outfile << Filename << endl;
 				
-				//file?
+				//more file/dir objects?
 				retf = FAT_FindNextFile(fname);
-				
-				//otherwise directory?
-				if(retf == FT_DIR){
-					FileClass FileClassInst = getEntryFromGlobalListByIndex(LastDirEntry); 
-					std::string FullPathStr = buildFullPathFromFileClass(&FileClassInst);
-					sprintf(fname,"%s/<dir>",FullPathStr.c_str());
-				}			
 			}
+			
 			outfile.close();
 			printf("filelist %s saved.",filelogout.c_str());
 			while(keysPressed() & KEY_START){}
