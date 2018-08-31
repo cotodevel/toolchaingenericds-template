@@ -36,6 +36,8 @@ using namespace std;
 #include <cstdio>
 #endif
 
+
+#define entriesPerList (int)(32)
 #endif
 
 
@@ -49,6 +51,9 @@ extern int main(int _argc, sint8 **_argv);
 extern std::string getDldiDefaultPath();
 #endif
 
+extern char * internalName[entriesPerList][512];	//internal name
+extern char * printName[entriesPerList][512];	//printable name
+extern bool ShowBrowser();
 #ifdef __cplusplus
 }
 #endif

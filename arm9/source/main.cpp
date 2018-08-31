@@ -192,13 +192,14 @@ std::string getDldiDefaultPath(){
 
 
 void menuShow(){
-	printf("Select: clearscreen");
-	printf("Read File: Y 0:/filelist.txt");
-	printf("Write File: rootfileList to 0:/filelist.txt");
-	printf("L: dump dldi file from memory");
-	printf("	to %s",getDldiDefaultPath().c_str());
-	printf("UP: get function size demo");
-	
+	clrscr();
+	printf("                              ");
+	printf("Y: Read File: 0:/filelist.txt");
+	printf("X: generate root file list into 0:/filelist.txt");
+	printf("L: dump dldi file to %s",getDldiDefaultPath().c_str());
+	printf("DOWN: co processor threading example");
+	printf("Start: simple file browser");
+	printf("Select: this menu");
 }
 
 //customHandler 
@@ -227,6 +228,106 @@ void CustomDebugHandler(){
 	while(1==1){}
 }
 
+
+
+
+char * internalName[entriesPerList][512];	//internal name
+char * printName[entriesPerList][512];	//printable name
+
+bool ShowBrowser(){
+	while(keysPressed() & KEY_START){}
+	
+	int pressed = 0;
+	bool lcdSwapS = false;
+	/*
+	printf("gbaemu DS by ichfly\n");
+	printf("press B for lcdswap A for normal\n");
+	while(1) 
+	{
+		int isdaas = keysPressed();
+		if (isdaas&KEY_A)
+		{
+			lcdSwapS = false;
+			break;
+		}
+		if(isdaas&KEY_B)
+		{
+			lcdSwapS = true;
+			break;
+		}
+	}
+	*/
+	struct dirent *de;  // Pointer for directory entry
+	char cwPath[512] = {0};
+	sprintf(cwPath,"%s","/gba");
+	DIR *dr = opendir(cwPath);
+	
+    if (dr == NULL){  // opendir returns NULL if couldn't open directory
+        printf("Could not open %s directory. check README.md ",cwPath);
+        while(1==1);
+    }
+	int j = 0, k =0;
+    while ((de = readdir(dr)) != NULL){
+		if(j < entriesPerList){
+			//if( utilIsGBAImage((const char *)de->d_name) == true)
+			{
+				sprintf((char*)&internalName[j],"%s",de->d_name);	//internal name
+				int CopySize = strlen(de->d_name) + 1;
+				if( CopySize > 22){	//up to 23 characters on menu
+					snprintf((char*)&printName[j], 22 + 4, "%s%s", (char*)&internalName[j], "...");
+				}
+				else{
+					snprintf((char*)&printName[j], CopySize, "%s", (char*)&internalName[j]);
+				}
+				j++;
+			}
+		}
+	}
+    closedir(dr);    
+	
+	//actual file lister
+	clrscr();
+	while(k < j ){
+		printfCoords(0, k, "--- %s",(char*)&printName[k]);
+		k++;
+	}
+	
+	pressed = 0 ;
+	k = 0;
+	int lastVal = 0;
+	while(1){
+		pressed = keysPressed();
+		if (pressed&KEY_DOWN && k < (j - 1) ){
+			k++;
+			while(pressed&KEY_DOWN){
+				pressed = keysPressed();
+			}
+		}
+		if (pressed&KEY_UP && k != 0) {
+			k--;
+			while(pressed&KEY_UP){
+				pressed = keysPressed();
+			}
+		}
+		if(pressed&KEY_START){
+			break;
+		}
+		// Show cursor
+		printfCoords(0, k, "*");
+		if(lastVal != k){
+			printfCoords(0, lastVal, " ");	//clean old
+		}
+		while(!(pressed&KEY_DOWN) && !(pressed&KEY_UP) && !(pressed&KEY_START)){
+			pressed = keysPressed();
+		}
+		lastVal = k;
+	}
+	clrscr();
+	printf("                                   ");
+	printf("you chose file:%s",(char*)&internalName[k]);
+	return lcdSwapS;
+}
+
 int main(int _argc, sint8 **_argv) {
 	
 	/*			TGDS 1.4 Standard ARM9 Init code start	*/
@@ -249,13 +350,9 @@ int main(int _argc, sint8 **_argv) {
 	}
 	/*			TGDS 1.4 Standard ARM9 Init code end	*/
 	
-	
 	//custom Handler
 	setupCustomExceptionHandler((uint32*)&CustomDebugHandler);
-	
 	InitializeThreads();
-	printf("InitializeThreads ok");
-	
 	menuShow();
 	
 	while (1)
@@ -324,6 +421,12 @@ int main(int _argc, sint8 **_argv) {
 			while(keysPressed() & KEY_X){}
 		}
 		*/
+		
+		if (keysPressed() & KEY_START){
+			ShowBrowser();
+			while(keysPressed() & KEY_START){}
+		}
+		
 		if (keysPressed() & KEY_Y){
 		
 			char InFile[80];  // input file name
@@ -360,12 +463,11 @@ int main(int _argc, sint8 **_argv) {
 				printf("->%s",someString.c_str());
 			}
 			
-			
 			while(keysPressed() & KEY_Y){}
 		}
 		
 		if (keysPressed() & KEY_SELECT){
-			GUI_clear();
+			menuShow();
 		}
 		
 		if (keysPressed() & KEY_DOWN){
@@ -379,7 +481,7 @@ int main(int _argc, sint8 **_argv) {
 			while(keysPressed() & KEY_DOWN){}
 		}
 		
-		if (keysPressed() & KEY_START){
+		if (keysPressed() & KEY_X){
 			std::string filelogout = string(getfatfsPath("filelist.txt"));
 			std::ofstream outfile (filelogout,std::ofstream::binary);
 			char fname[MAX_TGDSFILENAME_LENGTH+1] = {0};
@@ -404,7 +506,7 @@ int main(int _argc, sint8 **_argv) {
 			
 			outfile.close();
 			printf("filelist %s saved.",filelogout.c_str());
-			while(keysPressed() & KEY_START){}
+			while(keysPressed() & KEY_X){}
 		}
 		
 		if (keysPressed() & KEY_L){
