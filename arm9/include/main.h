@@ -23,6 +23,7 @@ USA
 
 #include "typedefsTGDS.h"
 #include "dsregs.h"
+#include "limitsTGDS.h"
 
 #ifdef __cplusplus
 //C++ part
@@ -37,7 +38,6 @@ using namespace std;
 #endif
 
 
-#define entriesPerList (int)(32)
 #endif
 
 
@@ -46,13 +46,11 @@ extern "C" {
 #endif
 
 extern int main(int _argc, sint8 **_argv);
-
+extern char curChosenBrowseFile[MAX_TGDSFILENAME_LENGTH+1];
 #ifdef __cplusplus
 extern std::string getDldiDefaultPath();
 #endif
 
-extern char * internalName[entriesPerList][512];	//internal name
-extern char * printName[entriesPerList][512];	//printable name
 extern bool ShowBrowser();
 #ifdef __cplusplus
 }
