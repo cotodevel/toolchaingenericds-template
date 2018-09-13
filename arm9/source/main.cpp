@@ -475,18 +475,17 @@ int main(int _argc, sint8 **_argv) {
 			char fname[MAX_TGDSFILENAME_LENGTH+1] = {0};
 			int retf = FAT_FindFirstFile(fname);
 			while(retf != FT_NONE){
+				std::string fnameOut = std::string("");
 				//directory?
 				if(retf == FT_DIR){
 					struct FileClass * fileClassInst = getFileClass(LastDirEntry);
-					sprintf(fname,"%s/<dir>",fileClassInst->fd_namefullPath);
+					fnameOut = string(fileClassInst->fd_namefullPath) + string("/<dir>");
 				}
 				//file?
-				else if(retf == FT_DIR){
-					struct FileClass * fileClassInst = getFileClass(LastDirEntry);
-					sprintf(fname,"%s/",fileClassInst->fd_namefullPath);
+				else if(retf == FT_FILE){
+					fnameOut = string(fname);
 				}
-				std::string Filename = string(fname);
-				outfile << Filename << endl;
+				outfile << fnameOut << endl;
 				
 				//more file/dir objects?
 				retf = FAT_FindNextFile(fname);
