@@ -23,10 +23,10 @@ USA
 #include <fstream>
 #include <list>
 #include <vector>
-//#include <cmath>	//todo
+#include <cmath>
 #include <cstdlib>
 #include <cstdio>
-//#include <iterator>	//todo:
+#include <iterator>
 
 using namespace std;
 
@@ -233,8 +233,6 @@ void CustomDebugHandler(){
 	while(1==1){}
 }
 
-//todo: add the posix components this function requires 
-/*
 template<class Iter>
 Iter splitStrings(const std::string &s, const std::string &delim, Iter out)
 {
@@ -251,7 +249,6 @@ Iter splitStrings(const std::string &s, const std::string &delim, Iter out)
 	*out++ = std::move(s.substr(a, s.length() - a));
 	return out;
 }
-*/
 
 vector<string> splitCustom(string str, string token){
     vector<string>result;
@@ -401,8 +398,8 @@ bool ShowBrowser(char * Path){
 					localPathCopy.erase(strSize - 1, 1);
 				}
 
-				//todo: splitStrings(localPathCopy, "/", std::back_inserter(vecOut));
-				vecOut = splitCustom(std::string(localPathCopy), std::string("/"));
+				splitStrings(localPathCopy, "/", std::back_inserter(vecOut));
+				//vecOut = splitCustom(std::string(localPathCopy), std::string("/"));
 				if (vecOut.size() < 3) {
 					//3 items - 2 = at least 1 showable item does not exists, fall back to root dir
 					LocalPathOut = string("/");
