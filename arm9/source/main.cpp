@@ -19,14 +19,16 @@ USA
 */
 
 //C++ part
-using namespace std;
 #include <iostream>
 #include <fstream>
 #include <list>
 #include <vector>
-#include <cmath>
+//#include <cmath>	//todo
 #include <cstdlib>
 #include <cstdio>
+//#include <iterator>	//todo:
+
+using namespace std;
 
 #include "socket.h"
 #include "in.h"
@@ -231,57 +233,99 @@ void CustomDebugHandler(){
 	while(1==1){}
 }
 
-
-bool ShowBrowser(){
-	while(keysPressed() & KEY_START){}
-	/*
-	printf("gbaemu DS by ichfly\n");
-	printf("press B for lcdswap A for normal\n");
-	while(1) 
-	{
-		int isdaas = keysPressed();
-		if (isdaas&KEY_A)
-		{
-			lcdSwapS = false;
-			break;
-		}
-		if(isdaas&KEY_B)
-		{
-			lcdSwapS = true;
-			break;
-		}
+//todo: add the posix components this function requires 
+/*
+template<class Iter>
+Iter splitStrings(const std::string &s, const std::string &delim, Iter out)
+{
+	if (delim.empty()) {
+		*out++ = s;
+		return out;
 	}
-	*/
-	vector<std::string> internalName;
-	std::string cwPath = std::string("/gba");
+	size_t a = 0, b = s.find(delim);
+	for (; b != std::string::npos;
+		a = b + delim.length(), b = s.find(delim, a))
+	{
+		*out++ = std::move(s.substr(a, b - a));
+	}
+	*out++ = std::move(s.substr(a, s.length() - a));
+	return out;
+}
+*/
+
+vector<string> splitCustom(string str, string token){
+    vector<string>result;
+    while(str.size()){
+        int index = str.find(token);
+        if(index != (int)string::npos){
+            result.push_back(str.substr(0,index));
+            str = str.substr(index+token.size());
+            if(str.size()==0)result.push_back(str);
+        }else{
+            result.push_back(str);
+            str = "";
+        }
+    }
+    return result;
+}
+
+static char localPath[256];
+bool ShowBrowser(char * Path){
+	while((keysPressed() & KEY_START) || (keysPressed() & KEY_A) || (keysPressed() & KEY_B)){}
+	std::string cwPath = std::string(Path);
 	int pressed = 0;
 	bool lcdSwapS = false;
-	struct dirent *de = NULL;  // Pointer for directory entry
-	DIR *dr = opendir(cwPath.c_str());
-    if (dr == NULL){  // opendir returns NULL if couldn't open directory
-        printf("Could not open %s directory. check README.md ",cwPath.c_str());
-        while(1==1);
-    }
+	vector<struct FileClass *> internalName;
+	
+	char fname[256];
+	sprintf(fname,"%s",Path);
 	int j = 0, k =0;
-    while ((de = readdir(dr)) != NULL){
-		//if( utilIsGBAImage((const char *)de->d_name) == true)
-		{
-			internalName.push_back(de->d_name);
-			j++;
+    
+	int retf = FAT_FindFirstFile(fname);
+	while(retf != FT_NONE){
+		struct FileClass * fileClassInst = NULL;
+		//directory?
+		if(retf == FT_DIR){
+			fileClassInst = getFileClass(LastDirEntry);
+			std::string outDirName = string(fileClassInst->fd_namefullPath);
+			outDirName.erase(0,2);	//trim the 0: 
+			outDirName.erase(outDirName.length());	//trim the leading "/"
+			sprintf(fileClassInst->fd_namefullPath,"%s",outDirName.c_str());
 		}
+		//file?
+		else if(retf == FT_FILE){
+			fileClassInst = getFileClass(LastFileEntry); 
+			
+		}
+		internalName.push_back(fileClassInst);
+		
+		//more file/dir objects?
+		retf = FAT_FindNextFile(fname);
+		j++;
 	}
-    closedir(dr);    
 	
 	//actual file lister
 	clrscr();
 	while(k < j ){
-		printfCoords(0, k, "--- %s",internalName.at(k).c_str());
+		if(internalName.at(k)->type == FT_DIR){
+			printfCoords(0, k, "--- %s%s",internalName.at(k)->fd_namefullPath,"<dir>");
+		}
+		else{
+			printfCoords(0, k, "--- %s",internalName.at(k)->fd_namefullPath);
+		}
 		k++;
 	}
 	
 	pressed = 0 ;
 	k = 0;
 	int lastVal = 0;
+	
+	
+	bool reloadDirA = false;
+	bool reloadDirB = false;
+	
+	std::string newDir = std::string("");
+	
 	while(1){
 		pressed = keysPressed();
 		if (pressed&KEY_DOWN && k < (j - 1) ){
@@ -296,23 +340,143 @@ bool ShowBrowser(){
 				pressed = keysPressed();
 			}
 		}
-		if(pressed&KEY_START){
+		
+		//reload DIR (forward)
+		if( (pressed&KEY_A) && (internalName.at(k)->type == FT_DIR) ){
+			newDir = string(internalName.at(k)->fd_namefullPath);
+			reloadDirA = true;
+		}
+		
+		////reload DIR (backward)
+		if(pressed&KEY_B){
+			reloadDirB = true;
+		}
+		
+		if( (pressed&KEY_START) || (reloadDirA == true) || (reloadDirB == true)){
 			break;
 		}
+		
 		// Show cursor
 		printfCoords(0, k, "*");
 		if(lastVal != k){
 			printfCoords(0, lastVal, " ");	//clean old
 		}
-		while(!(pressed&KEY_DOWN) && !(pressed&KEY_UP) && !(pressed&KEY_START)){
+		while(!(pressed&KEY_DOWN) && !(pressed&KEY_UP) && !(pressed&KEY_START) && !(pressed&KEY_A) && !(pressed&KEY_B)){
 			pressed = keysPressed();
 		}
 		lastVal = k;
 	}
-	sprintf((char*)curChosenBrowseFile,"%s%s%s%s","0:",cwPath.c_str(),"/",internalName.at(k).c_str());
+	
+	//enter a dir
+	if(reloadDirA == true){
+		
+		if(strlen(localPath) == 0){
+			sprintf(localPath,"%s",newDir.c_str());
+		}
+		else{
+			std::string localPathCopy = string(localPath) + string(newDir);
+			sprintf(localPath,"%s",localPathCopy.c_str());
+		}
+		
+		//reload
+		//printf("rewind:%s",localPath);
+		//while(1==1);
+		setBasePath((char *)localPath);
+		chdir((char *)localPath);
+		clrscr();
+		ShowBrowser((char *)localPath);
+	}
+	
+	//leave a dir
+	if(reloadDirB == true){
+		//rewind to preceding dir in localPath
+		
+		std::vector<std::string> vecOut;
+		std::string localPathCopy = string(localPath);	//"/dir1/dir2/dir3/");
+		std::string LocalPathOut = std::string("");
+		size_t counter = 0;
+		std::size_t found = localPathCopy.find("/");
+		
+		if (found != std::string::npos) {
+			int strSize = localPathCopy.size();
+			if (found != strSize) {
+				
+				if (localPathCopy.at(strSize - 1) == '/') {
+					//remove leading /    
+					localPathCopy.erase(strSize - 1, 1);
+				}
+
+				//todo: splitStrings(localPathCopy, "/", std::back_inserter(vecOut));
+				vecOut = splitCustom(std::string(localPathCopy), std::string("/"));
+				if (vecOut.size() < 3) {
+					//3 items - 2 = at least 1 showable item does not exists, fall back to root dir
+					LocalPathOut = string("/");
+				}
+				else {
+					for (int i = 0; i < (int)vecOut.size() - 1; i++) {
+						LocalPathOut = LocalPathOut + string(vecOut.at(i)) + "/";
+						//printf("(%s):%d \n", string(vecOut.at(i)).c_str(), i);
+						counter++;
+					}
+				}
+				//remove the last / only the string parsing was valid
+				int localPathSize = LocalPathOut.size();
+				if (localPathSize > 0) {
+					if ((LocalPathOut.at(localPathSize - 1) == '/') && (counter != 0)) {
+						LocalPathOut.erase(localPathSize - 1, 1);
+					}
+				}
+				if (localPathSize > 1) {
+					//remove duplicate /
+					if ((LocalPathOut.at(0) == '/') && (LocalPathOut.at(1) == '/')) {
+						LocalPathOut.erase(0, 1);
+					}
+				}
+			}
+		}
+		//no string found, use root dir
+		else {
+			LocalPathOut.insert(0, "/");
+		}
+		
+		sprintf(localPath,"%s",LocalPathOut.c_str());
+		setBasePath((char *)LocalPathOut.c_str());
+		chdir((char *)LocalPathOut.c_str());
+		clrscr();
+		
+		//reload
+		printf("              ");
+		printf("              ");
+		printf("rewind:%s",LocalPathOut.c_str());
+		
+		while(1) 
+		{
+			int isdaas = keysPressed();
+			if (isdaas&KEY_B)
+			{
+				break;
+			}
+		}
+		while(keysPressed() & KEY_B){}
+		
+		ShowBrowser((char *)LocalPathOut.c_str());
+	}
+	
+	if(internalName.at(k)->type == FT_DIR){
+		sprintf((char*)curChosenBrowseFile,"%s",internalName.at(k)->fd_namefullPath);
+	}
+	else{
+		sprintf((char*)curChosenBrowseFile,"%s",internalName.at(k)->fd_namefullPath);
+	}
+	
 	clrscr();
 	printf("                                   ");
-	printf("you chose file:%s",curChosenBrowseFile);
+	if(internalName.at(k)->type == FT_DIR){
+		printf("you chose Dir:%s",curChosenBrowseFile);
+	}
+	else{
+		printf("you chose File:%s",curChosenBrowseFile);
+	}
 	return lcdSwapS;
 }
 
@@ -411,7 +575,7 @@ int main(int _argc, sint8 **_argv) {
 		*/
 		
 		if (keysPressed() & KEY_START){
-			ShowBrowser();
+			ShowBrowser("/");
 			while(keysPressed() & KEY_START){}
 		}
 		
