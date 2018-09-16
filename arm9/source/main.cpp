@@ -269,14 +269,12 @@ vector<string> splitCustom(string str, string token){
     return result;
 }
 
+//internal: used by the current built path used in ShowBrowser
 static char localPath[256];
 bool ShowBrowser(char * Path){
 	while((keysPressed() & KEY_START) || (keysPressed() & KEY_A) || (keysPressed() & KEY_B)){}
-	std::string cwPath = std::string(Path);
 	int pressed = 0;
-	bool lcdSwapS = false;
 	vector<struct FileClass *> internalName;
-	
 	char fname[256];
 	sprintf(fname,"%s",Path);
 	int j = 0, k =0;
@@ -320,7 +318,6 @@ bool ShowBrowser(char * Path){
 	k = 0;
 	int lastVal = 0;
 	
-	
 	bool reloadDirA = false;
 	bool reloadDirB = false;
 	
@@ -345,14 +342,16 @@ bool ShowBrowser(char * Path){
 		if( (pressed&KEY_A) && (internalName.at(k)->type == FT_DIR) ){
 			newDir = string(internalName.at(k)->fd_namefullPath);
 			reloadDirA = true;
+			break;
 		}
 		
 		////reload DIR (backward)
-		if(pressed&KEY_B){
+		else if(pressed&KEY_B){
 			reloadDirB = true;
+			break;
 		}
 		
-		if( (pressed&KEY_START) || (reloadDirA == true) || (reloadDirB == true)){
+		else if(pressed&KEY_START){
 			break;
 		}
 		
@@ -369,7 +368,6 @@ bool ShowBrowser(char * Path){
 	
 	//enter a dir
 	if(reloadDirA == true){
-		
 		if(strlen(localPath) == 0){
 			sprintf(localPath,"%s",newDir.c_str());
 		}
@@ -379,18 +377,15 @@ bool ShowBrowser(char * Path){
 		}
 		
 		//reload
-		//printf("rewind:%s",localPath);
-		//while(1==1);
 		setBasePath((char *)localPath);
 		chdir((char *)localPath);
 		clrscr();
-		ShowBrowser((char *)localPath);
+		return true;
 	}
 	
 	//leave a dir
 	if(reloadDirB == true){
 		//rewind to preceding dir in localPath
-		
 		std::vector<std::string> vecOut;
 		std::string localPathCopy = string(localPath);	//"/dir1/dir2/dir3/");
 		std::string LocalPathOut = std::string("");
@@ -439,27 +434,12 @@ bool ShowBrowser(char * Path){
 			LocalPathOut.insert(0, "/");
 		}
 		
+		//reload
 		sprintf(localPath,"%s",LocalPathOut.c_str());
 		setBasePath((char *)LocalPathOut.c_str());
 		chdir((char *)LocalPathOut.c_str());
 		clrscr();
-		
-		//reload
-		printf("              ");
-		printf("              ");
-		printf("rewind:%s",LocalPathOut.c_str());
-		
-		while(1) 
-		{
-			int isdaas = keysPressed();
-			if (isdaas&KEY_B)
-			{
-				break;
-			}
-		}
-		while(keysPressed() & KEY_B){}
-		
-		ShowBrowser((char *)LocalPathOut.c_str());
+		return true;
 	}
 	
 	if(internalName.at(k)->type == FT_DIR){
@@ -477,7 +457,7 @@ bool ShowBrowser(char * Path){
 	else{
 		printf("you chose File:%s",curChosenBrowseFile);
 	}
-	return lcdSwapS;
+	return false;
 }
 
 int main(int _argc, sint8 **_argv) {
@@ -575,8 +555,13 @@ int main(int _argc, sint8 **_argv) {
 		*/
 		
 		if (keysPressed() & KEY_START){
-			ShowBrowser("/");
-			while(keysPressed() & KEY_START){}
+			
+			//as long you keep using directories ShowBrowser will be true
+			char startPath[256];
+			sprintf(startPath,"%s","/");
+			while( ShowBrowser((char *)startPath) == true ){
+				
+			}
 		}
 		
 		if (keysPressed() & KEY_Y){
