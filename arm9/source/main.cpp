@@ -266,8 +266,6 @@ vector<string> splitCustom(string str, string token){
     return result;
 }
 
-//internal: used by the current built path used in ShowBrowser
-static char localPath[256];
 bool ShowBrowser(char * Path){
 	while((keysPressed() & KEY_START) || (keysPressed() & KEY_A) || (keysPressed() & KEY_B)){}
 	int pressed = 0;
@@ -365,26 +363,26 @@ bool ShowBrowser(char * Path){
 	
 	//enter a dir
 	if(reloadDirA == true){
-		if(strlen(localPath) == 0){
-			sprintf(localPath,"%s",newDir.c_str());
+		if(strlen(TGDSCurrentWorkingDirectory) == 0){
+			sprintf(TGDSCurrentWorkingDirectory,"%s",newDir.c_str());
 		}
 		else{
-			std::string localPathCopy = string(localPath) + string(newDir);
-			sprintf(localPath,"%s",localPathCopy.c_str());
+			std::string localPathCopy = string(TGDSCurrentWorkingDirectory) + string(newDir);
+			sprintf(TGDSCurrentWorkingDirectory,"%s",localPathCopy.c_str());
 		}
 		
 		//reload
-		setBasePath((char *)localPath);
-		chdir((char *)localPath);
+		setBasePath((char *)TGDSCurrentWorkingDirectory);
+		chdir((char *)TGDSCurrentWorkingDirectory);
 		clrscr();
 		return true;
 	}
 	
 	//leave a dir
 	if(reloadDirB == true){
-		//rewind to preceding dir in localPath
+		//rewind to preceding dir in TGDSCurrentWorkingDirectory
 		std::vector<std::string> vecOut;
-		std::string localPathCopy = string(localPath);	//"/dir1/dir2/dir3/");
+		std::string localPathCopy = string(TGDSCurrentWorkingDirectory);	//"/dir1/dir2/dir3/");
 		std::string LocalPathOut = std::string("");
 		size_t counter = 0;
 		std::size_t found = localPathCopy.find("/");
@@ -432,7 +430,7 @@ bool ShowBrowser(char * Path){
 		}
 		
 		//reload
-		sprintf(localPath,"%s",LocalPathOut.c_str());
+		sprintf(TGDSCurrentWorkingDirectory,"%s",LocalPathOut.c_str());
 		setBasePath((char *)LocalPathOut.c_str());
 		chdir((char *)LocalPathOut.c_str());
 		clrscr();
