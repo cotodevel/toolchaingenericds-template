@@ -205,7 +205,7 @@ void menuShow(){
 	printf("DOWN: co processor threading example");
 	printf("Start: simple file browser");
 	printf("Select: this menu");
-	
+	/*
 	char str[] = "0:/folder0/folder1/folder2/folder3/";
     char * delimiter = "/";
 	printf("getLastDirFromPath():Occurrences:%d->",getLastDirFromPath(str, delimiter, outPath));
@@ -214,6 +214,7 @@ void menuShow(){
 	char * splitBuf = (char*)&outSplitBuf[item][0];
     str_split(str, delimiter, NULL);
     printf("str_split():%s",splitBuf);
+	*/
 }
 
 //customHandler 
@@ -380,6 +381,7 @@ bool ShowBrowser(char * Path){
 	//leave a dir
 	if(reloadDirB == true){
 		//rewind to preceding dir in TGDSCurrentWorkingDirectory
+		/*	//C++, deprecated
 		std::vector<std::string> vecOut;
 		std::string localPathCopy = string(TGDSCurrentWorkingDirectory);	//"/dir1/dir2/dir3/");
 		std::string LocalPathOut = std::string("");
@@ -427,11 +429,14 @@ bool ShowBrowser(char * Path){
 		else {
 			LocalPathOut.insert(0, "/");
 		}
-		
 		//reload
 		sprintf(TGDSCurrentWorkingDirectory,"%s",LocalPathOut.c_str());
 		setBasePath((char *)LocalPathOut.c_str());
 		chdir((char *)LocalPathOut.c_str());
+		*/
+		
+		//C
+		leaveDir(TGDSCurrentWorkingDirectory);
 		clrscr();
 		return true;
 	}
