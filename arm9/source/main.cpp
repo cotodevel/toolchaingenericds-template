@@ -208,7 +208,12 @@ void menuShow(){
 	
 	char str[] = "0:/folder0/folder1/folder2/folder3/";
     char * delimiter = "/";
-	printf("Occurrences:%d->%s",str_split(str, delimiter, outPath),outPath);
+	printf("getLastDirFromPath():Occurrences:%d->",getLastDirFromPath(str, delimiter, outPath));
+	printf("%s",outPath);
+	int item = 1;   //item to show in the split buffer that was found by str_split() call
+	char * splitBuf = (char*)&outSplitBuf[item][0];
+    str_split(str, delimiter, NULL);
+    printf("str_split():%s",splitBuf);
 }
 
 //customHandler 
