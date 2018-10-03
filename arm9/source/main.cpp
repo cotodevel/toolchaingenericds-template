@@ -205,6 +205,10 @@ void menuShow(){
 	printf("DOWN: co processor threading example");
 	printf("Start: simple file browser");
 	printf("Select: this menu");
+	
+	char str[] = "0:/folder0/folder1/folder2/folder3/";
+    char * delimiter = "/";
+	printf("Occurrences:%d->%s",str_split(str, delimiter, outPath),outPath);
 }
 
 //customHandler 
@@ -340,7 +344,7 @@ bool ShowBrowser(char * Path){
 			break;
 		}
 		
-		////reload DIR (backward)
+		//reload DIR (backward)
 		else if(pressed&KEY_B){
 			reloadDirB = true;
 			break;
@@ -363,17 +367,7 @@ bool ShowBrowser(char * Path){
 	
 	//enter a dir
 	if(reloadDirA == true){
-		if(strlen(TGDSCurrentWorkingDirectory) == 0){
-			sprintf(TGDSCurrentWorkingDirectory,"%s",newDir.c_str());
-		}
-		else{
-			std::string localPathCopy = string(TGDSCurrentWorkingDirectory) + string(newDir);
-			sprintf(TGDSCurrentWorkingDirectory,"%s",localPathCopy.c_str());
-		}
-		
-		//reload
-		setBasePath((char *)TGDSCurrentWorkingDirectory);
-		chdir((char *)TGDSCurrentWorkingDirectory);
+		enterDir((char*)newDir.c_str());
 		clrscr();
 		return true;
 	}
