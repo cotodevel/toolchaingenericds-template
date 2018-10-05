@@ -298,7 +298,9 @@ bool ShowBrowser(char * Path){
 		//file?
 		else if(retf == FT_FILE){
 			fileClassInst = getFileClass(LastFileEntry); 
-			
+			std::string outFileName = string(fileClassInst->fd_namefullPath);
+			outFileName.erase(0,2);	//trim the 0: 
+			sprintf(fileClassInst->fd_namefullPath,"%s",outFileName.c_str());
 		}
 		internalName.push_back(fileClassInst);
 		
@@ -310,11 +312,15 @@ bool ShowBrowser(char * Path){
 	//actual file lister
 	clrscr();
 	while(k < j ){
+		std::string strDirFileName = string(internalName.at(k)->fd_namefullPath);		
+		if(strlen(getBasePath()) == 1){
+			strDirFileName.erase(0,1);	//trim the starting "/"
+		}
 		if(internalName.at(k)->type == FT_DIR){
-			printfCoords(0, k, "--- %s%s",internalName.at(k)->fd_namefullPath,"<dir>");
+			printfCoords(0, k, "--- %s%s%s",getBasePath(),strDirFileName.c_str(),"<dir>");
 		}
 		else{
-			printfCoords(0, k, "--- %s",internalName.at(k)->fd_namefullPath);
+			printfCoords(0, k, "--- %s%s",getBasePath(),strDirFileName.c_str());
 		}
 		k++;
 	}
@@ -374,70 +380,13 @@ bool ShowBrowser(char * Path){
 	//enter a dir
 	if(reloadDirA == true){
 		enterDir((char*)newDir.c_str());
-		clrscr();
 		return true;
 	}
 	
 	//leave a dir
 	if(reloadDirB == true){
 		//rewind to preceding dir in TGDSCurrentWorkingDirectory
-		/*	//C++, deprecated
-		std::vector<std::string> vecOut;
-		std::string localPathCopy = string(TGDSCurrentWorkingDirectory);	//"/dir1/dir2/dir3/");
-		std::string LocalPathOut = std::string("");
-		size_t counter = 0;
-		std::size_t found = localPathCopy.find("/");
-		
-		if (found != std::string::npos) {
-			int strSize = localPathCopy.size();
-			if (found != strSize) {
-				
-				if (localPathCopy.at(strSize - 1) == '/') {
-					//remove leading /    
-					localPathCopy.erase(strSize - 1, 1);
-				}
-
-				splitStrings(localPathCopy, "/", std::back_inserter(vecOut));
-				//vecOut = splitCustom(std::string(localPathCopy), std::string("/"));
-				if (vecOut.size() < 3) {
-					//3 items - 2 = at least 1 showable item does not exists, fall back to root dir
-					LocalPathOut = string("/");
-				}
-				else {
-					for (int i = 0; i < (int)vecOut.size() - 1; i++) {
-						LocalPathOut = LocalPathOut + string(vecOut.at(i)) + "/";
-						//printf("(%s):%d \n", string(vecOut.at(i)).c_str(), i);
-						counter++;
-					}
-				}
-				//remove the last / only the string parsing was valid
-				int localPathSize = LocalPathOut.size();
-				if (localPathSize > 0) {
-					if ((LocalPathOut.at(localPathSize - 1) == '/') && (counter != 0)) {
-						LocalPathOut.erase(localPathSize - 1, 1);
-					}
-				}
-				if (localPathSize > 1) {
-					//remove duplicate /
-					if ((LocalPathOut.at(0) == '/') && (LocalPathOut.at(1) == '/')) {
-						LocalPathOut.erase(0, 1);
-					}
-				}
-			}
-		}
-		//no string found, use root dir
-		else {
-			LocalPathOut.insert(0, "/");
-		}
-		//reload
-		sprintf(TGDSCurrentWorkingDirectory,"%s",LocalPathOut.c_str());
-		setBasePath((char *)LocalPathOut.c_str());
-		chdir((char *)LocalPathOut.c_str());
-		*/
-		
-		//C
-		leaveDir(TGDSCurrentWorkingDirectory);
-		clrscr();
+		leaveDir(TGDSCurrentWorkingDirectory,KEY_B);
 		return true;
 	}
 	
@@ -561,6 +510,8 @@ int main(int _argc, sint8 **_argv) {
 			while( ShowBrowser((char *)startPath) == true ){
 				
 			}
+			while(keysPressed() & KEY_START){}
+			menuShow();
 		}
 		
 		if (keysPressed() & KEY_Y){
