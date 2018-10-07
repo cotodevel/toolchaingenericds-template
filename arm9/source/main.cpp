@@ -276,6 +276,24 @@ vector<string> splitCustom(string str, string token){
     return result;
 }
 
+
+std::string parseDirNameTGDS(std::string dirName){
+	if ((dirName.at(0) == '/') && (dirName.at(1) == '/')) {
+		dirName.erase(0,1);	//trim the starting / if it has one
+	}
+	dirName.erase(dirName.length());	//trim the leading "/"
+	return dirName;
+}
+
+std::string parsefileNameTGDS(std::string fileName){
+	if ((fileName.at(2) == '/') && (fileName.at(3) == '/')) {
+		fileName.erase(2,2);	//trim the starting // if it has one (since getfspath appends 0:/)
+		if(fileName.at(2) != '/'){	//if we trimmed by accident the only leading / such as 0:filename instead of 0:/filename, restore it so it becomes the latter
+			fileName.insert(2, ToStr('/') );
+		}
+	}
+	return fileName;
+}
 bool ShowBrowser(char * Path){
 	while((keysPressed() & KEY_START) || (keysPressed() & KEY_A) || (keysPressed() & KEY_B)){}
 	int pressed = 0;
@@ -291,15 +309,13 @@ bool ShowBrowser(char * Path){
 		if(retf == FT_DIR){
 			fileClassInst = getFileClass(LastDirEntry);
 			std::string outDirName = string(fileClassInst->fd_namefullPath);
-			//outDirName.erase(0,1);	//trim the /
-			outDirName.erase(outDirName.length());	//trim the leading "/"
-			sprintf(fileClassInst->fd_namefullPath,"%s",outDirName.c_str());
+			sprintf(fileClassInst->fd_namefullPath,"%s",parseDirNameTGDS(outDirName).c_str());
 		}
 		//file?
 		else if(retf == FT_FILE){
 			fileClassInst = getFileClass(LastFileEntry); 
 			std::string outFileName = string(fileClassInst->fd_namefullPath);
-			sprintf(fileClassInst->fd_namefullPath,"%s",outFileName.c_str());
+			sprintf(fileClassInst->fd_namefullPath,"%s",parsefileNameTGDS(outFileName).c_str());
 		}
 		internalName.push_back(fileClassInst);
 		
@@ -579,11 +595,13 @@ int main(int _argc, sint8 **_argv) {
 				//directory?
 				if(retf == FT_DIR){
 					struct FileClass * fileClassInst = getFileClass(LastDirEntry);
-					fnameOut = string(fileClassInst->fd_namefullPath) + string("/<dir>");
+					std::string outDirName = string(fileClassInst->fd_namefullPath);
+					fnameOut = parseDirNameTGDS(outDirName) + string("/<dir>");
 				}
 				//file?
 				else if(retf == FT_FILE){
-					fnameOut = string(fname);
+					std::string outfileName = string(fname);
+					fnameOut = parsefileNameTGDS(outfileName);
 				}
 				outfile << fnameOut << endl;
 				
