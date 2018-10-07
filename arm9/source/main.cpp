@@ -291,7 +291,7 @@ bool ShowBrowser(char * Path){
 		if(retf == FT_DIR){
 			fileClassInst = getFileClass(LastDirEntry);
 			std::string outDirName = string(fileClassInst->fd_namefullPath);
-			outDirName.erase(0,2);	//trim the 0: 
+			//outDirName.erase(0,1);	//trim the /
 			outDirName.erase(outDirName.length());	//trim the leading "/"
 			sprintf(fileClassInst->fd_namefullPath,"%s",outDirName.c_str());
 		}
@@ -299,7 +299,6 @@ bool ShowBrowser(char * Path){
 		else if(retf == FT_FILE){
 			fileClassInst = getFileClass(LastFileEntry); 
 			std::string outFileName = string(fileClassInst->fd_namefullPath);
-			outFileName.erase(0,2);	//trim the 0: 
 			sprintf(fileClassInst->fd_namefullPath,"%s",outFileName.c_str());
 		}
 		internalName.push_back(fileClassInst);
@@ -313,14 +312,16 @@ bool ShowBrowser(char * Path){
 	clrscr();
 	while(k < j ){
 		std::string strDirFileName = string(internalName.at(k)->fd_namefullPath);		
-		if(strlen(getBasePath()) == 1){
+		/*
+		if(strlen(getTGDSCurrentWorkingDirectory()) == 1){
 			strDirFileName.erase(0,1);	//trim the starting "/"
 		}
+		*/
 		if(internalName.at(k)->type == FT_DIR){
-			printfCoords(0, k, "--- %s%s%s",getBasePath(),strDirFileName.c_str(),"<dir>");
+			printfCoords(0, k, "--- %s%s",strDirFileName.c_str(),"<dir>");
 		}
 		else{
-			printfCoords(0, k, "--- %s%s",getBasePath(),strDirFileName.c_str());
+			printfCoords(0, k, "--- %s",strDirFileName.c_str());
 		}
 		k++;
 	}
@@ -386,7 +387,7 @@ bool ShowBrowser(char * Path){
 	//leave a dir
 	if(reloadDirB == true){
 		//rewind to preceding dir in TGDSCurrentWorkingDirectory
-		leaveDir(TGDSCurrentWorkingDirectory,KEY_B);
+		leaveDir(getTGDSCurrentWorkingDirectory(),KEY_B);
 		return true;
 	}
 	
