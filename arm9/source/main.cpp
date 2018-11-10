@@ -307,13 +307,13 @@ bool ShowBrowser(char * Path){
 		struct FileClass * fileClassInst = NULL;
 		//directory?
 		if(retf == FT_DIR){
-			fileClassInst = getFileClass(LastDirEntry);
+			fileClassInst = getFileClassFromList(LastDirEntry);
 			std::string outDirName = string(fileClassInst->fd_namefullPath);
 			sprintf(fileClassInst->fd_namefullPath,"%s",parseDirNameTGDS(outDirName).c_str());
 		}
 		//file?
 		else if(retf == FT_FILE){
-			fileClassInst = getFileClass(LastFileEntry); 
+			fileClassInst = getFileClassFromList(LastFileEntry); 
 			std::string outFileName = string(fileClassInst->fd_namefullPath);
 			sprintf(fileClassInst->fd_namefullPath,"%s",parsefileNameTGDS(outFileName).c_str());
 		}
@@ -594,7 +594,7 @@ int main(int _argc, sint8 **_argv) {
 				std::string fnameOut = std::string("");
 				//directory?
 				if(retf == FT_DIR){
-					struct FileClass * fileClassInst = getFileClass(LastDirEntry);
+					struct FileClass * fileClassInst = getFileClassFromList(LastDirEntry);
 					std::string outDirName = string(fileClassInst->fd_namefullPath);
 					fnameOut = parseDirNameTGDS(outDirName) + string("/<dir>");
 				}
