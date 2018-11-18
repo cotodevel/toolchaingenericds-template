@@ -295,7 +295,9 @@ std::string parsefileNameTGDS(std::string fileName){
 	return fileName;
 }
 bool ShowBrowser(char * Path){
-	while((keysPressed() & KEY_START) || (keysPressed() & KEY_A) || (keysPressed() & KEY_B)){}
+	while((keysPressed() & KEY_START) || (keysPressed() & KEY_A) || (keysPressed() & KEY_B)){
+		scanKeys();
+	}
 	int pressed = 0;
 	vector<struct FileClass *> internalName;
 	char fname[256];
@@ -352,16 +354,19 @@ bool ShowBrowser(char * Path){
 	std::string newDir = std::string("");
 	
 	while(1){
+		scanKeys();
 		pressed = keysPressed();
 		if (pressed&KEY_DOWN && k < (j - 1) ){
 			k++;
 			while(pressed&KEY_DOWN){
+				scanKeys();
 				pressed = keysPressed();
 			}
 		}
 		if (pressed&KEY_UP && k != 0) {
 			k--;
 			while(pressed&KEY_UP){
+				scanKeys();
 				pressed = keysPressed();
 			}
 		}
@@ -389,6 +394,7 @@ bool ShowBrowser(char * Path){
 			printfCoords(0, lastVal, " ");	//clean old
 		}
 		while(!(pressed&KEY_DOWN) && !(pressed&KEY_UP) && !(pressed&KEY_START) && !(pressed&KEY_A) && !(pressed&KEY_B)){
+			scanKeys();
 			pressed = keysPressed();
 		}
 		lastVal = k;
@@ -403,7 +409,7 @@ bool ShowBrowser(char * Path){
 	//leave a dir
 	if(reloadDirB == true){
 		//rewind to preceding dir in TGDSCurrentWorkingDirectory
-		leaveDir(getTGDSCurrentWorkingDirectory(),KEY_B);
+		leaveDir(getTGDSCurrentWorkingDirectory());
 		return true;
 	}
 	
@@ -452,8 +458,8 @@ int main(int _argc, sint8 **_argv) {
 	InitializeThreads();
 	menuShow();
 	
-	while (1)
-	{
+	while (1){
+		scanKeys();
 		/*
 		if (keysPressed() & KEY_A){
 			printf("mylist should contain:1 10 20 30 30 20 2 3 4 5");
@@ -527,7 +533,9 @@ int main(int _argc, sint8 **_argv) {
 			while( ShowBrowser((char *)startPath) == true ){
 				
 			}
-			while(keysPressed() & KEY_START){}
+			while(keysPressed() & KEY_START){
+				scanKeys();
+			}
 			menuShow();
 		}
 		
@@ -567,7 +575,9 @@ int main(int _argc, sint8 **_argv) {
 				printf("->%s",someString.c_str());
 			}
 			
-			while(keysPressed() & KEY_Y){}
+			while(keysPressed() & KEY_Y){
+				scanKeys();
+			}
 		}
 		
 		if (keysPressed() & KEY_SELECT){
@@ -582,7 +592,9 @@ int main(int _argc, sint8 **_argv) {
 		   
 			struct notifierProcessorHandlerQueued procrResponse = RunFunctionExtProcessor(16, 4, 88, 99, (u32*) &my_function1, f1Size);
 			printf("RunFunctionExtProcessor: %d ", (int)procrResponse.notifierStatus);
-			while(keysPressed() & KEY_DOWN){}
+			while(keysPressed() & KEY_DOWN){
+				scanKeys();
+			}
 		}
 		
 		if (keysPressed() & KEY_X){
@@ -611,7 +623,9 @@ int main(int _argc, sint8 **_argv) {
 			
 			outfile.close();
 			printf("filelist %s saved.",filelogout.c_str());
-			while(keysPressed() & KEY_X){}
+			while(keysPressed() & KEY_X){
+				scanKeys();
+			}
 		}
 		
 		if (keysPressed() & KEY_L){
@@ -625,7 +639,9 @@ int main(int _argc, sint8 **_argv) {
 				printf("%s exported.",getDldiDefaultPath().c_str());
 				printf("%d bytes",dldiSize);
 			}
-			while(keysPressed() & KEY_L){}
+			while(keysPressed() & KEY_L){
+				scanKeys();
+			}
 		}
 		
 		IRQVBlankWait();
