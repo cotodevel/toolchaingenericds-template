@@ -528,7 +528,7 @@ int main(int _argc, sint8 **_argv) {
 		if (keysPressed() & KEY_START){
 			
 			//as long you keep using directories ShowBrowser will be true
-			char startPath[256];
+			char startPath[MAX_TGDSFILENAME_LENGTH+1];
 			sprintf(startPath,"%s","/");
 			while( ShowBrowser((char *)startPath) == true ){
 				
