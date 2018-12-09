@@ -72,6 +72,7 @@ using namespace std;
 #include "nds_cp15_misc.h"
 #include "notifierProcessor.h"
 #include "limitsTGDS.h"
+#include "dswnifi_lib.h"
 
 char curChosenBrowseFile[MAX_TGDSFILENAME_LENGTH+1];
 
@@ -452,6 +453,7 @@ int main(int _argc, sint8 **_argv) {
 	{
 		printf("FS Init error.");
 	}
+	switch_dswnifi_mode(dswifi_idlemode);
 	/*			TGDS 1.5 Standard ARM9 Init code end	*/
 	
 	//custom Handler
