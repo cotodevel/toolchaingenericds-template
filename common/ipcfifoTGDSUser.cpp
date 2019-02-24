@@ -21,8 +21,13 @@ USA
 
 //TGDS required version: IPC Version: 1.3
 
+//IPC FIFO Description: 
+//		struct sIPCSharedTGDS * TGDSIPC = TGDSIPCStartAddress; 														// Access to TGDS internal IPC FIFO structure. 		(ipcfifoTGDS.h)
+//		struct sIPCSharedTGDSSpecific * TGDSUSERIPC = (struct sIPCSharedTGDSSpecific *)TGDSIPCUserStartAddress;		// Access to TGDS Project (User) IPC FIFO structure	(ipcfifoTGDSUser.h)
+
+
 #include "ipcfifoTGDS.h"
-#include "specific_shared.h"
+#include "ipcfifoTGDSUser.h"
 #include "dsregs.h"
 #include "dsregs_asm.h"
 #include "InterruptsARMCores_h.h"
@@ -44,13 +49,6 @@ USA
 
 #endif
 
-//Coto: Hardware IPC struct packed 
-struct sIPCSharedTGDSSpecific* getsIPCSharedTGDSSpecific(){
-	struct sIPCSharedTGDSSpecific* sIPCSharedTGDSSpecificInst = (__attribute__((packed)) struct sIPCSharedTGDSSpecific*)(getUserIPCAddress());
-	return sIPCSharedTGDSSpecificInst;
-}
-
-//inherits what is defined in: common_shared.c
 #ifdef ARM9
 __attribute__((section(".itcm")))
 #endif
