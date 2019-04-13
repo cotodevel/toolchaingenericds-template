@@ -7,8 +7,15 @@ Compile this project: Open msys, through msys commands head to the directory you
 After compiling, run the example in NDS.
 
 Project Specific description: 
-The standard TGDS arm7 binary (non TGDS ARM7 custom code) donor, is taken from this project. 
-For this to be effective, the ARM9 binary must be at least TGDS compatible. 
-(not related to ARM9 NTR map, but rather the init code, otherwise both ARM cores will hang)
+ToolchainGenericDS-template adds basic TGDS functionality to a NintendoDS / Flashcart. You could use it to test your dldi driver/flashcart.
+What it does: 
+Y: Reads a file named filelist.txt
+X: Builds a list of the current root sd card files/directories into a file named filelist.txt
+L: Dump the dldi driver from the flashcart if you ran ToolchainGenericDS-template.nds from a flashcart. 
+   This driver can be re-used by NDS loaders to increase support of NDS DLDI enabled homebrew for your flashcart if the native flashcart loader fails to load some NDS homebrew.
+Start: Basic file browser
+Down: Beta threading library, currently WIP, but it allows to bootstrap ARM9 ARM assembly code so it runs on ARM7 and notifies back (to ARM9) a status of it when done.
+
+/release folder has the latest binary precompiled for your convenience.
 
 Coto
