@@ -461,7 +461,15 @@ int main(int _argc, sint8 **_argv) {
 	InitializeThreads();
 	menuShow();
 	
+	int px = 0;
+	int py = 0;
+	struct sIPCSharedTGDS * TGDSIPC = TGDSIPCStartAddress;
+	
 	while (1){
+		px=TGDSIPC->touchXpx;
+		py=TGDSIPC->touchYpx;
+		printfCoords(0, 14, "Touchscreen Values: X: %d -- Y: %d", px, py);
+		
 		scanKeys();
 		/*
 		if (keysPressed() & KEY_A){
