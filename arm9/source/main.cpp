@@ -243,7 +243,7 @@ void CustomDebugHandler(){
 	printf("R15[%x] SPSR[%x] CPSR[%X]  \n",pc_abort,debugVector[17],debugVector[16]);
 	while(1==1){}
 }
-
+/*
 template<class Iter>
 Iter splitStrings(const std::string &s, const std::string &delim, Iter out)
 {
@@ -295,6 +295,8 @@ std::string parsefileNameTGDS(std::string fileName){
 	}
 	return fileName;
 }
+*/
+
 bool ShowBrowser(char * Path){
 	while((keysPressed() & KEY_START) || (keysPressed() & KEY_A) || (keysPressed() & KEY_B)){
 		scanKeys();
@@ -312,13 +314,13 @@ bool ShowBrowser(char * Path){
 		if(retf == FT_DIR){
 			fileClassInst = getFileClassFromList(LastDirEntry);
 			std::string outDirName = string(fileClassInst->fd_namefullPath);
-			sprintf(fileClassInst->fd_namefullPath,"%s",parseDirNameTGDS(outDirName).c_str());
+			//sprintf(fileClassInst->fd_namefullPath,"%s",parseDirNameTGDS(outDirName).c_str());	//todo
 		}
 		//file?
 		else if(retf == FT_FILE){
 			fileClassInst = getFileClassFromList(LastFileEntry); 
 			std::string outFileName = string(fileClassInst->fd_namefullPath);
-			sprintf(fileClassInst->fd_namefullPath,"%s",parsefileNameTGDS(outFileName).c_str());
+			//sprintf(fileClassInst->fd_namefullPath,"%s",parsefileNameTGDS(outFileName).c_str());	//todo
 		}
 		internalName.push_back(fileClassInst);
 		
@@ -555,6 +557,7 @@ int main(int _argc, sint8 **_argv) {
 			char InFile[80];  // input file name
 			char ch;
 			
+			
 			ifstream InStream;
 			std::string someString;
 			
@@ -609,6 +612,7 @@ int main(int _argc, sint8 **_argv) {
 		}
 		
 		if (keysPressed() & KEY_X){
+			/*
 			std::string filelogout = string(getfatfsPath("filelist.txt"));
 			std::ofstream outfile (filelogout,std::ofstream::binary);
 			char fname[MAX_TGDSFILENAME_LENGTH+1] = {0};
@@ -634,6 +638,7 @@ int main(int _argc, sint8 **_argv) {
 			
 			outfile.close();
 			printf("filelist %s saved.",filelogout.c_str());
+			*/
 			while(keysPressed() & KEY_X){
 				scanKeys();
 			}
