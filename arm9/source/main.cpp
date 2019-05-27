@@ -70,7 +70,6 @@ using namespace std;
 #include "dmaTGDS.h"
 #include "biosTGDS.h"
 #include "nds_cp15_misc.h"
-#include "notifierProcessor.h"
 #include "limitsTGDS.h"
 #include "dswnifi_lib.h"
 
@@ -203,7 +202,6 @@ void menuShow(){
 	printf("Y: Read File: 0:/filelist.txt");
 	printf("X: generate root file list into 0:/filelist.txt");
 	printf("L: dump dldi file to %s",getDldiDefaultPath().c_str());
-	printf("DOWN: co processor threading example");
 	printf("Start: simple file browser");
 	printf("Select: this menu");
 	/*
@@ -458,7 +456,6 @@ int main(int _argc, sint8 **_argv) {
 	
 	//custom Handler
 	setupCustomExceptionHandler((uint32*)&CustomDebugHandler);
-	InitializeThreads();
 	menuShow();
 	
 	while (1){
@@ -585,19 +582,6 @@ int main(int _argc, sint8 **_argv) {
 		
 		if (keysPressed() & KEY_SELECT){
 			menuShow();
-		}
-		
-		if (keysPressed() & KEY_DOWN){
-			int f1Size = SIZEOF_FUNCTION(my_function1);
-			int f2Size = SIZEOF_FUNCTION(my_function2);
-			int res1 = my_function1(16, 4);
-			int res2 = my_function2(16, 4);
-		   
-			struct notifierProcessorHandlerQueued procrResponse = RunFunctionExtProcessor(16, 4, 88, 99, (u32*) &my_function1, f1Size);
-			printf("RunFunctionExtProcessor: %d ", (int)procrResponse.notifierStatus);
-			while(keysPressed() & KEY_DOWN){
-				scanKeys();
-			}
 		}
 		
 		if (keysPressed() & KEY_X){
