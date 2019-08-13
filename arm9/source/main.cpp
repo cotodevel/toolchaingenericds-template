@@ -18,6 +18,21 @@ USA
 
 */
 
+#include "dsregs.h"
+#include "dsregs_asm.h"
+#include "typedefsTGDS.h"
+
+#include "socket.h"
+#include "in.h"
+#include <netdb.h>
+#include <ctype.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
+#include <fcntl.h>
+
 //C++ part
 #include <iostream>
 #include <fstream>
@@ -30,20 +45,6 @@ USA
 
 using namespace std;
 
-#include "socket.h"
-#include "in.h"
-#include <netdb.h>
-#include <ctype.h>
-#include <stdarg.h>
-#include <string.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <stdarg.h>
-#include <stdlib.h>
-#include <string.h>
-#include <fcntl.h>
-
 #include "main.h"
 #include "InterruptsARMCores_h.h"
 #include "ipcfifoTGDSUser.h"
@@ -52,11 +53,7 @@ using namespace std;
 #include "fileHandleTGDS.h"
 #include "reent.h"
 #include "sys/types.h"
-#include "dsregs.h"
-#include "dsregs_asm.h"
-#include "typedefsTGDS.h"
 #include "consoleTGDS.h"
-#include "utilsTGDS.h"
 
 #include "devoptab_devices.h"
 #include "fatfslayerTGDS.h"
@@ -72,6 +69,7 @@ using namespace std;
 #include "nds_cp15_misc.h"
 #include "limitsTGDS.h"
 #include "dswnifi_lib.h"
+#include "utilsTGDS.h"
 
 char curChosenBrowseFile[MAX_TGDSFILENAME_LENGTH+1];
 
