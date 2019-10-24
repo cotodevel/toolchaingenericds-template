@@ -98,9 +98,9 @@ void cl::put_i(int j)
 class Box
 {
   public:
-    int length = 0;
-    int breadth = 0;
-    int height = 0;
+    int length;
+    int breadth;
+    int height;
 
     // Constructor
     Box(int lengthValue, int breadthValue, int heightValue)
@@ -238,23 +238,6 @@ void CustomDebugHandler(){
 	printf("R12[%x] R13[%X] R14[%X]  \n",debugVector[0xc],debugVector[0xd],debugVector[0xe]);
 	printf("R15[%x] SPSR[%x] CPSR[%X]  \n",pc_abort,debugVector[17],debugVector[16]);
 	while(1==1){}
-}
-
-template<class Iter>
-Iter splitStrings(const std::string &s, const std::string &delim, Iter out)
-{
-	if (delim.empty()) {
-		*out++ = s;
-		return out;
-	}
-	size_t a = 0, b = s.find(delim);
-	for (; b != std::string::npos;
-		a = b + delim.length(), b = s.find(delim, a))
-	{
-		*out++ = std::move(s.substr(a, b - a));
-	}
-	*out++ = std::move(s.substr(a, s.length() - a));
-	return out;
 }
 
 vector<string> splitCustom(string str, string token){
@@ -545,6 +528,9 @@ int main(int _argc, sint8 **_argv) {
 			ifstream InStream;
 			std::string someString;
 			
+			ofstream OutStream;
+			
+			
 			sprintf(InFile,"%s%s",getfatfsPath((char*)""),"filelist.txt");
 			
 			// Open file for input
@@ -583,8 +569,10 @@ int main(int _argc, sint8 **_argv) {
 		}
 		
 		if (keysPressed() & KEY_X){
-			std::string filelogout = string(getfatfsPath("filelist.txt"));
-			std::ofstream outfile (filelogout,std::ofstream::binary);
+			
+			string fOut = string(getfatfsPath((char *)"filelist.txt"));
+			std::ofstream outfile;
+			outfile.open(fOut.c_str());
 			char fname[MAX_TGDSFILENAME_LENGTH+1] = {0};
 			int retf = FAT_FindFirstFile(fname);
 			while(retf != FT_NONE){
@@ -607,7 +595,7 @@ int main(int _argc, sint8 **_argv) {
 			}
 			
 			outfile.close();
-			printf("filelist %s saved.",filelogout.c_str());
+			printf("filelist %s saved.", fOut.c_str());
 			while(keysPressed() & KEY_X){
 				scanKeys();
 			}
