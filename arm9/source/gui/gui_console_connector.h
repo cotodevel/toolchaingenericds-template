@@ -29,16 +29,13 @@ USA
 #include <malloc.h>
 #include <ctype.h>
 #include "ipcfifoTGDSUser.h"
-
 #include "typedefsTGDS.h"
 #include "dsregs.h"
 #include "consoleTGDS.h"
 #include "biosTGDS.h"
-
 #include "InterruptsARMCores_h.h"
 #include "dmaTGDS.h"
-
-#include "memoryHandleTGDS.h"
+#include "utilsTGDS.h"
 #include "fatfslayerTGDS.h"
 #include "keypadTGDS.h"
 #include "videoTGDS.h"
