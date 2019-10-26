@@ -18,17 +18,14 @@ USA
 
 */
 
-#include "ipcfifoTGDSUser.h"
+#include "typedefsTGDS.h"
 #include "dsregs.h"
 #include "dsregs_asm.h"
-
-#include "InterruptsARMCores_h.h"
 #include "interrupts.h"
-#include "wifi_arm7.h"
-#include "main.h"
+#include "biosTGDS.h"
+#include "ipcfifoTGDSUser.h"
 
 //User Handler Definitions
-
 #ifdef ARM9
 __attribute__((section(".itcm")))
 #endif
@@ -36,7 +33,6 @@ inline __attribute__((always_inline))
 void IpcSynchandlerUser(){
 	
 }
-
 
 #ifdef ARM9
 __attribute__((section(".itcm")))

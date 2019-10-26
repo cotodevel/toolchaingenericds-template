@@ -1,5 +1,5 @@
 Updated default ARM7-binary date:
-04/12/2019	(mm/dd/yyyy)
+10/26/2019	(mm/dd/yyyy)
 
 Format:
 ARM7-Binary (non elf). a.k.a baremetal bootable binary.
