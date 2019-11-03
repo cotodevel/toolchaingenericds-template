@@ -72,117 +72,6 @@ using namespace std;
 
 char curChosenBrowseFile[MAX_TGDSFILENAME_LENGTH+1];
 
-//test1
-//default class instance
-class cl {
-  int i; // private by default
-public:
-  int get_i();
-  void put_i(int j);
-};
-
-int cl::get_i()
-{
-  return i;
-}
-
-void cl::put_i(int j)
-{
-  i = j;
-}
-
-//test2
-//constructor example
-// Class to represent a box
-class Box
-{
-  public:
-    int length;
-    int breadth;
-    int height;
-
-    // Constructor
-    Box(int lengthValue, int breadthValue, int heightValue)
-    {
-      printf("Box constructor called");
-      length = lengthValue;
-      breadth = breadthValue;
-      height = heightValue;
-    }
-
-    // Function to calculate the volume of a box
-    int volume()
-    {
-      return length * breadth * height;
-    }
-};
-
-//test 3
-//class copy
-class myclass {
-  int *p;
-public:
-  myclass(int i);
-  ~myclass();
-  int getval() { return *p; }
-};
-
-myclass::myclass(int i)
-{
-  printf("Allocating p");
-  p = new int;
-  if(!p) {
-    printf("Allocation failure.");
-    exit(1); // exit program if out of memory
-  }
-  *p = i;
-}
-
-myclass::~myclass()
-{
-  printf("Freeing p");
-  delete p;
-}
-
-// when this function is called, the copy constructor is called
-void display(myclass ob)
-{
-	printf("%d",ob.getval());
-}
-
-
-//test4
-class myclass2 {
-  int *p;
-public:
-  myclass2(int i);
-  ~myclass2();
-  int getval() { return *p; }
-};
-
-myclass2::myclass2(int i)
-{
-	printf("Allocating p");
-	p = new int;
-	if(!p) {
-		printf("Allocation failure.");
-		exit(1); // exit program if out of memory
-	}
-	*p = i;
-}
-
-// use destructor to free memory
-myclass2::~myclass2()
-{
-  printf("Freeing p");
-  delete p;
-}
-
-void display2(myclass2 &ob)
-{
-	printf("%d",ob.getval());
-}
-
 string ToStr( char c ) {
    return string( 1, c );
 }
@@ -192,7 +81,6 @@ std::string getDldiDefaultPath(){
 	return dldiOut;
 }
 
-
 void menuShow(){
 	clrscr();
 	printf("                              ");
@@ -201,16 +89,6 @@ void menuShow(){
 	printf("L: dump dldi file to %s",getDldiDefaultPath().c_str());
 	printf("Start: simple file browser");
 	printf("Select: this menu");
-	/*
-	char str[] = "0:/folder0/folder1/folder2/folder3/";
-    char * delimiter = "/";
-	printf("getLastDirFromPath():Occurrences:%d->",getLastDirFromPath(str, delimiter, outPath));
-	printf("%s",outPath);
-	int item = 1;   //item to show in the split buffer that was found by str_split() call
-	char * splitBuf = (char*)&outSplitBuf[item][0];
-    str_split(str, delimiter, NULL);
-    printf("str_split():%s",splitBuf);
-	*/
 }
 
 //customHandler 
@@ -273,16 +151,21 @@ std::string parsefileNameTGDS(std::string fileName){
 	}
 	return fileName;
 }
+
 bool ShowBrowser(char * Path){
 	while((keysPressed() & KEY_START) || (keysPressed() & KEY_A) || (keysPressed() & KEY_B)){
 		scanKeys();
 	}
 	int pressed = 0;
 	vector<struct FileClass *> internalName;
+	struct FileClass filStub;
 	char fname[256];
 	sprintf(fname,"%s",Path);
-	int j = 0, k =0;
+	int j = 1;
     
+	//OK, use the new CWD and build the playlist
+	internalName.push_back(&filStub);
+	
 	int retf = FAT_FindFirstFile(fname);
 	while(retf != FT_NONE){
 		struct FileClass * fileClassInst = NULL;
@@ -296,64 +179,112 @@ bool ShowBrowser(char * Path){
 		else if(retf == FT_FILE){
 			fileClassInst = getFileClassFromList(LastFileEntry); 
 			std::string outFileName = string(fileClassInst->fd_namefullPath);
+			
 			sprintf(fileClassInst->fd_namefullPath,"%s",parsefileNameTGDS(outFileName).c_str());
 		}
 		internalName.push_back(fileClassInst);
 		
 		//more file/dir objects?
 		retf = FAT_FindNextFile(fname);
-		j++;
 	}
 	
 	//actual file lister
 	clrscr();
-	while(k < j ){
-		std::string strDirFileName = string(internalName.at(k)->fd_namefullPath);		
-		/*
-		if(strlen(getTGDSCurrentWorkingDirectory()) == 1){
-			strDirFileName.erase(0,1);	//trim the starting "/"
-		}
-		*/
-		if(internalName.at(k)->type == FT_DIR){
-			printfCoords(0, k, "--- %s%s",strDirFileName.c_str(),"<dir>");
-		}
-		else{
-			printfCoords(0, k, "--- %s",strDirFileName.c_str());
-		}
-		k++;
-	}
 	
+	j = 1;
 	pressed = 0 ;
-	k = 0;
 	int lastVal = 0;
-	
 	bool reloadDirA = false;
 	bool reloadDirB = false;
-	
 	std::string newDir = std::string("");
 	
+	#define itemsShown (int)(15)
+	int curjoffset = 0;
+	int itemRead=1;
+	
 	while(1){
+		
+		int itemsToLoad = (internalName.size() - curjoffset);
+		
+		//check if remaining items are enough
+		if(itemsToLoad > itemsShown){
+			itemsToLoad = itemsShown;
+		}
+		
+		while(itemRead < itemsToLoad ){
+			std::string strDirFileName = string(internalName.at(itemRead+curjoffset)->fd_namefullPath);		
+			if(internalName.at(itemRead+curjoffset)->type == FT_DIR){
+				printfCoords(0, itemRead, "--- %s%s",strDirFileName.c_str(),"<dir>");
+			}
+			else{
+				printfCoords(0, itemRead, "--- %s",strDirFileName.c_str());
+			}
+			itemRead++;
+		}
+		
 		scanKeys();
 		pressed = keysPressed();
-		if (pressed&KEY_DOWN && k < (j - 1) ){
-			k++;
+		if (pressed&KEY_DOWN && (j < (itemsToLoad - 1) ) ){
+			j++;
 			while(pressed&KEY_DOWN){
 				scanKeys();
 				pressed = keysPressed();
 			}
 		}
-		if (pressed&KEY_UP && k != 0) {
-			k--;
+		
+		//downwards: means we need to reload new screen
+		else if(pressed&KEY_DOWN && (j >= (itemsToLoad - 1) ) && ((internalName.size() - curjoffset - itemRead) > 0) ){
+			
+			//list only the remaining items
+			clrscr();
+			
+			curjoffset = (curjoffset + itemsToLoad - 1);
+			itemRead = 1;
+			j = 1;
+			
+			scanKeys();
+			pressed = keysPressed();
+			while(pressed&KEY_DOWN){
+				scanKeys();
+				pressed = keysPressed();
+			}
+		}
+		
+		if (pressed&KEY_UP && (j > 1)) {
+			j--;
 			while(pressed&KEY_UP){
 				scanKeys();
 				pressed = keysPressed();
 			}
 		}
 		
+		//upwards: means we need to reload new screen
+		else if (pressed&KEY_UP && (j <= 1) && (curjoffset > 0) ) {
+			//list only the remaining items
+			clrscr();
+			
+			curjoffset--;
+			itemRead = 1;
+			j = 1;
+			
+			scanKeys();
+			pressed = keysPressed();
+			while(pressed&KEY_UP){
+				scanKeys();
+				pressed = keysPressed();
+			}
+		}
+		
+		
 		//reload DIR (forward)
-		if( (pressed&KEY_A) && (internalName.at(k)->type == FT_DIR) ){
-			newDir = string(internalName.at(k)->fd_namefullPath);
+		if( (pressed&KEY_A) && (internalName.at(j+curjoffset)->type == FT_DIR) ){
+			newDir = string(internalName.at(j+curjoffset)->fd_namefullPath);
 			reloadDirA = true;
+			break;
+		}
+		
+		//file chosen
+		else if( (pressed&KEY_A) && (internalName.at(j+curjoffset)->type == FT_FILE) ){
 			break;
 		}
 		
@@ -363,24 +294,17 @@ bool ShowBrowser(char * Path){
 			break;
 		}
 		
-		else if(pressed&KEY_START){
-			break;
-		}
-		
 		// Show cursor
-		printfCoords(0, k, "*");
-		if(lastVal != k){
+		printfCoords(0, j, "*");
+		if(lastVal != j){
 			printfCoords(0, lastVal, " ");	//clean old
 		}
-		while(!(pressed&KEY_DOWN) && !(pressed&KEY_UP) && !(pressed&KEY_START) && !(pressed&KEY_A) && !(pressed&KEY_B)){
-			scanKeys();
-			pressed = keysPressed();
-		}
-		lastVal = k;
+		lastVal = j;
 	}
 	
 	//enter a dir
 	if(reloadDirA == true){
+		internalName.clear();
 		enterDir((char*)newDir.c_str());
 		return true;
 	}
@@ -392,19 +316,14 @@ bool ShowBrowser(char * Path){
 		return true;
 	}
 	
-	if(internalName.at(k)->type == FT_DIR){
-		sprintf((char*)curChosenBrowseFile,"%s",internalName.at(k)->fd_namefullPath);
-	}
-	else{
-		sprintf((char*)curChosenBrowseFile,"%s",internalName.at(k)->fd_namefullPath);
-	}
-	
+	sprintf((char*)curChosenBrowseFile,"%s",internalName.at(j+curjoffset)->fd_namefullPath);
 	clrscr();
 	printf("                                   ");
-	if(internalName.at(k)->type == FT_DIR){
-		printf("you chose Dir:%s",curChosenBrowseFile);
+	
+	if(internalName.at(j+curjoffset)->type == FT_DIR){
+		//printf("you chose Dir:%s",curChosenBrowseFile);
 	}
-	else{
+	else if(internalName.at(j+curjoffset)->type == FT_FILE){
 		printf("you chose File:%s",curChosenBrowseFile);
 	}
 	return false;
@@ -440,70 +359,6 @@ int main(int _argc, sint8 **_argv) {
 	
 	while (1){
 		scanKeys();
-		/*
-		if (keysPressed() & KEY_A){
-			printf("mylist should contain:1 10 20 30 30 20 2 3 4 5");
-			std::list<int> mylist;
-			std::list<int>::iterator it;
-			// set some initial values:
-			for (int i=1; i<=5; ++i) mylist.push_back(i); // 1 2 3 4 5
-
-			it = mylist.begin();
-			++it;       // it points now to number 2           ^
-
-			mylist.insert (it,10);                        // 1 10 2 3 4 5
-
-			// "it" still points to number 2                      ^
-			mylist.insert (it,2,20);                      // 1 10 20 20 2 3 4 5
-
-			--it;       // it points now to the second 20            ^
-
-			std::vector<int> myvector (2,30);
-			mylist.insert (it,myvector.begin(),myvector.end());
-													// 1 10 20 30 30 20 2 3 4 5
-													//               ^
-			for (it=mylist.begin(); it!=mylist.end(); ++it){
-				printf("%d-",*it);
-			}
-			
-			while(keysPressed() & KEY_A){}
-		}
-		
-		if (keysPressed() & KEY_B){
-			//	//float printf support: todo
-			// sqrtf() is a library function to calculate square root
-			//float number = 5.0, squareRoot = 0.0;
-			//squareRoot = sqrtf(number);
-			//printf("float:Square root of %f=%f",number,squareRoot);
-			
-			//double number2 = 4.0, squareRoot2 = 0.0;
-			//squareRoot = sqrt(number2);
-			//printf("double:Square root of %lf=%lf",number,squareRoot);
-
-			cl s;
-
-			s.put_i(10);
-			printf("Test1:res:%d",s.get_i());
-			
-			//test constructor
-			Box BoxInst(20,20,80);
-			printf("Test2:Box Test:%d",BoxInst.volume());
-			
-			//copy constructor
-			printf("Test3: Constructor");
-			myclass a(10);
-			display(a);
-			
-			while(keysPressed() & KEY_B){}
-		}
-		
-		if (keysPressed() & KEY_X){
-			printf("Test4: Destructor");
-			myclass2 a(10);
-			display2(a);
-			while(keysPressed() & KEY_X){}
-		}
-		*/
 		
 		if (keysPressed() & KEY_START){
 			
