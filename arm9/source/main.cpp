@@ -18,57 +18,19 @@ USA
 
 */
 
+#include "main.h"
 #include "dsregs.h"
 #include "dsregs_asm.h"
 #include "typedefsTGDS.h"
-
-#include "socket.h"
-#include "in.h"
-#include <netdb.h>
-#include <ctype.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
-#include <fcntl.h>
+#include "gui_console_connector.h"
+#include "dswnifi_lib.h"
+#include "dldi.h"
 
 //C++ part
-#include <iostream>
-#include <fstream>
-#include <list>
-#include <vector>
-#include <cmath>
-#include <cstdlib>
-#include <cstdio>
-#include <iterator>
-
 using namespace std;
-
-#include "main.h"
-#include "InterruptsARMCores_h.h"
-#include "ipcfifoTGDSUser.h"
-#include "ff.h"
-#include "fileHandleTGDS.h"
-#include "reent.h"
-#include "sys/types.h"
-#include "consoleTGDS.h"
-
-#include "devoptab_devices.h"
-#include "fatfslayerTGDS.h"
-#include "usrsettingsTGDS.h"
-#include "exceptionTGDS.h"
-
-#include "videoTGDS.h"
-#include "keypadTGDS.h"
-#include "dldi.h"
-#include "SpecialFunctions.h"
-#include "dmaTGDS.h"
-#include "biosTGDS.h"
-#include "nds_cp15_misc.h"
-#include "limitsTGDS.h"
-#include "dswnifi_lib.h"
-#include "utilsTGDS.h"
+#include <vector>
+#include <fstream>
+#include <cmath>
 
 char curChosenBrowseFile[MAX_TGDSFILENAME_LENGTH+1];
 
@@ -458,7 +420,7 @@ int main(int _argc, sint8 **_argv) {
 		if (keysPressed() & KEY_L){
 			DLDI_INTERFACE* dldiInterface = dldiGet();
 			uint8 * dldiStart = (uint8 *)dldiInterface;
-			int dldiSize = (int)pow((double)2, (double)dldiInterface->driverSize);
+			int dldiSize = (int)pow((double)2, (double)dldiInterface->driverSize);	// this is easily 2 << (dldiInterface->driverSize - 1), but I use pow() to test the math library in the ARM9 core
 			FILE * fh = fopen(getDldiDefaultPath().c_str(),"w+");
 			if(fh){
 				fwrite(dldiStart, 1, dldiSize, fh);
