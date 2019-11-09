@@ -71,10 +71,13 @@ export DIRS_ARM7_HEADER = source/	\
 export DIRS_ARM9_SRC = source/	\
 			source/interrupts/	\
 			source/gui/	\
+			source/data/	\
 			../common/
 			
 export DIRS_ARM9_HEADER = include/	\
+			source/interrupts/	\
 			source/gui/	\
+			source/data/	\
 			../common/	\
 			../$(PosIndCodeDIR_FILENAME)/$(DIR_ARM9)/include/
 

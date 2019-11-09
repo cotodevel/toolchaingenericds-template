@@ -25,6 +25,7 @@ USA
 #include "gui_console_connector.h"
 #include "dswnifi_lib.h"
 #include "dldi.h"
+#include "TGDSNDSLogo.h"
 
 //C++ part
 using namespace std;
@@ -294,7 +295,7 @@ bool ShowBrowser(char * Path){
 int main(int _argc, sint8 **_argv) {
 	
 	/*			TGDS 1.5 Standard ARM9 Init code start	*/
-	bool project_specific_console = false;	//set default console or custom console: default console
+	bool project_specific_console = true;	//set default console or custom console: custom console
 	GUI_init(project_specific_console);
 	GUI_clear();
 	
@@ -318,6 +319,14 @@ int main(int _argc, sint8 **_argv) {
 	//custom Handler
 	setupCustomExceptionHandler((uint32*)&CustomDebugHandler);
 	menuShow();
+	
+	//load TGDS Logo (NDS BMP Image)
+	//VRAM A Used by console
+	//VRAM C Keyboard and/or TGDS Logo
+	
+	printf("BMPBG is at: %x", &TGDSLogoNDSSize);
+	initFBModeSubEngine0x06200000();
+	renderFBMode3SubEngine((u16*)&TGDSLogoNDSSize[0], (int)TGDSLOGONDSSIZE_WIDTH,(int)TGDSLOGONDSSIZE_HEIGHT);
 	
 	while (1){
 		scanKeys();
