@@ -27,6 +27,7 @@ USA
 #include "dldi.h"
 #include "TGDSNDSLogo.h"
 #include "fileBrowse.hpp"	//generic template functions from TGDS: maintain 1 source, whose changes are globally accepted by all TGDS Projects.
+#include "utilTGDSTemplate9.h"
 
 //C++ part
 using namespace std;
@@ -35,6 +36,279 @@ using namespace std;
 #include <cmath>
 
 char curChosenBrowseFile[MAX_TGDSFILENAME_LENGTH+1];
+
+//example: std::string OverrideFileExtension("filename.txt", ".zip")
+static inline std::string OverrideFileExtension(const std::string& FileName, const std::string& newExt)
+{
+	std::string newString = string(FileName);
+    if(newString.find_last_of(".") != std::string::npos)
+        return newString.substr(0,newString.find_last_of('.'))+newExt;
+    return "";
+}
+
+static inline void waitByLoopAButton(){
+	scanKeys();
+	while(1==1){
+		if(keysPressed()&KEY_A){
+			break;
+		}
+		scanKeys();
+		IRQWait(IRQ_VBLANK);
+	}
+}
+
+static inline bool ShowBrowserCustom(char * Path, char * outBuf){
+	scanKeys();
+	while((keysPressed() & KEY_START) || (keysPressed() & KEY_A) || (keysPressed() & KEY_B)){
+		scanKeys();
+		IRQWait(IRQ_VBLANK);
+	}
+	int pressed = 0;
+	vector<struct FileClass *> internalName;	//required to handle FILE/DIR types from TGDS FS quick and easy
+	struct FileClass filStub;
+	char fname[256+1];
+	sprintf(fname,"%s",Path);
+	int j = 1;
+    
+	//OK, use the new CWD and build the playlist
+	internalName.push_back(&filStub);
+	
+	int retf = FAT_FindFirstFile(fname);
+	while(retf != FT_NONE){
+		struct FileClass * fileClassInst = NULL;
+		//directory?
+		if(retf == FT_DIR){
+			fileClassInst = getFileClassFromList(LastDirEntry);
+			std::string outDirName = string(fileClassInst->fd_namefullPath);
+			sprintf(fileClassInst->fd_namefullPath,"%s",parseDirNameTGDS(outDirName).c_str());
+		}
+		//file?
+		else if(retf == FT_FILE){
+			fileClassInst = getFileClassFromList(LastFileEntry); 
+			std::string outFileName = string(fileClassInst->fd_namefullPath);
+			sprintf(fileClassInst->fd_namefullPath,"%s",parsefileNameTGDS(outFileName).c_str());
+		}
+		internalName.push_back(fileClassInst);
+		
+		//more file/dir objects?
+		retf = FAT_FindNextFile(fname);
+	}
+	
+	//actual file lister
+	clrscr();
+	
+	j = 1;
+	pressed = 0 ;
+	int lastVal = 0;
+	bool reloadDirA = false;
+	bool reloadDirB = false;
+	std::string newDir = std::string("");
+	
+	#define itemsShown (int)(15)
+	int curjoffset = 0;
+	int itemRead=1;
+	
+	while(1){
+		
+		int itemsToLoad = (internalName.size() - curjoffset);
+		
+		//check if remaining items are enough
+		if(itemsToLoad > itemsShown){
+			itemsToLoad = itemsShown;
+		}
+		
+		while(itemRead < itemsToLoad ){
+			std::string strDirFileName = string(internalName.at(itemRead+curjoffset)->fd_namefullPath);		
+			if(internalName.at(itemRead+curjoffset)->type == FT_DIR){
+				printfCoords(0, itemRead, "--- %s%s",strDirFileName.c_str(),"<dir>");
+			}
+			else{
+				printfCoords(0, itemRead, "--- %s",strDirFileName.c_str());
+			}
+			itemRead++;
+		}
+		
+		scanKeys();
+		pressed = keysPressed();
+		if (pressed&KEY_DOWN && (j < (itemsToLoad - 1) ) ){
+			j++;
+			while(pressed&KEY_DOWN){
+				scanKeys();
+				pressed = keysPressed();
+				IRQWait(IRQ_VBLANK);
+			}
+		}
+		
+		//downwards: means we need to reload new screen
+		else if(pressed&KEY_DOWN && (j >= (itemsToLoad - 1) ) && ((internalName.size() - curjoffset - itemRead) > 0) ){
+			
+			//list only the remaining items
+			clrscr();
+			
+			curjoffset = (curjoffset + itemsToLoad - 1);
+			itemRead = 1;
+			j = 1;
+			
+			scanKeys();
+			pressed = keysPressed();
+			while(pressed&KEY_DOWN){
+				scanKeys();
+				pressed = keysPressed();
+				IRQWait(IRQ_VBLANK);
+			}
+		}
+		
+		//LEFT, reload new screen
+		else if(pressed&KEY_LEFT && ((curjoffset - itemsToLoad) > 0) ){
+			
+			//list only the remaining items
+			clrscr();
+			
+			curjoffset = (curjoffset - itemsToLoad - 1);
+			itemRead = 1;
+			j = 1;
+			
+			scanKeys();
+			pressed = keysPressed();
+			while(pressed&KEY_LEFT){
+				scanKeys();
+				pressed = keysPressed();
+				IRQWait(IRQ_VBLANK);
+			}
+		}
+		
+		//RIGHT, reload new screen
+		else if(pressed&KEY_RIGHT && ((internalName.size() - curjoffset - itemsToLoad) > 0) ){
+			
+			//list only the remaining items
+			clrscr();
+			
+			curjoffset = (curjoffset + itemsToLoad - 1);
+			itemRead = 1;
+			j = 1;
+			
+			scanKeys();
+			pressed = keysPressed();
+			while(pressed&KEY_RIGHT){
+				scanKeys();
+				pressed = keysPressed();
+				IRQWait(IRQ_VBLANK);
+			}
+		}
+		
+		else if (pressed&KEY_UP && (j > 1)) {
+			j--;
+			while(pressed&KEY_UP){
+				scanKeys();
+				pressed = keysPressed();
+				IRQWait(IRQ_VBLANK);
+			}
+		}
+		
+		//upwards: means we need to reload new screen
+		else if (pressed&KEY_UP && (j <= 1) && (curjoffset > 0) ) {
+			//list only the remaining items
+			clrscr();
+			
+			curjoffset--;
+			itemRead = 1;
+			j = 1;
+			
+			scanKeys();
+			pressed = keysPressed();
+			while(pressed&KEY_UP){
+				scanKeys();
+				pressed = keysPressed();
+				IRQWait(IRQ_VBLANK);
+			}
+		}
+		
+		//reload DIR (forward)
+		else if( (pressed&KEY_A) && (internalName.at(j+curjoffset)->type == FT_DIR) ){
+			newDir = string(internalName.at(j+curjoffset)->fd_namefullPath);
+			reloadDirA = true;
+			break;
+		}
+		
+		//file chosen
+		else if( (pressed&KEY_A) && (internalName.at(j+curjoffset)->type == FT_FILE) ){
+			break;
+		}
+		
+		//reload DIR (backward)
+		else if(pressed&KEY_B){
+			reloadDirB = true;
+			break;
+		}
+		
+		// Show cursor
+		printfCoords(0, j, "*");
+		if(lastVal != j){
+			printfCoords(0, lastVal, " ");	//clean old
+		}
+		lastVal = j;
+	}
+	
+	//enter a dir
+	if(reloadDirA == true){
+		internalName.clear();
+		enterDir((char*)newDir.c_str());
+		return true;
+	}
+	
+	//leave a dir
+	if(reloadDirB == true){
+		//rewind to preceding dir in TGDSCurrentWorkingDirectory
+		leaveDir(getTGDSCurrentWorkingDirectory());
+		return true;
+	}
+	
+	strcpy((char*)outBuf, internalName.at(j+curjoffset)->fd_namefullPath);
+	clrscr();
+	printf("                                   ");
+	if(internalName.at(j+curjoffset)->type == FT_DIR){
+		
+	}
+	else if(internalName.at(j+curjoffset)->type == FT_FILE){
+		string filenameChosen = string(internalName.at(j+curjoffset)->fd_namefullPath);
+		string targetLZSSFilenameOut = OverrideFileExtension(filenameChosen, ".lzss");
+		string targetLZSSFilenameIn = OverrideFileExtension(filenameChosen, ".bin");
+		printf("Press X to LZSS compress");
+		printf("%s into %s",filenameChosen.c_str(), targetLZSSFilenameOut.c_str());
+		printf("");
+		printf("Press Y to LZSS decompress");
+		printf("%s into %s",filenameChosen.c_str(), targetLZSSFilenameIn.c_str());
+		printf("");
+		printf("Press B to exit");
+		
+		scanKeys();
+		while(1==1){
+			if(keysPressed()&KEY_X){
+				//compress
+				printf("Compressing please wait...");
+				LZS_Encode(filenameChosen.c_str(), targetLZSSFilenameOut.c_str());
+				printf("Press A to exit");
+				waitByLoopAButton();
+				break;
+			}
+			else if(keysPressed()&KEY_Y){
+				//decompress
+				printf("Decompressing please wait...");
+				LZS_Decode(filenameChosen.c_str(), targetLZSSFilenameIn.c_str());
+				printf("Press A to exit");
+				waitByLoopAButton();
+				break;
+			}
+			else if(keysPressed()&KEY_B){
+				break;
+			}
+			scanKeys();
+			IRQWait(IRQ_VBLANK);
+		}
+		
+	}
+	return false;
+}
 
 std::string getDldiDefaultPath(){
 	std::string dldiOut = string((char*)getfatfsPath( (sint8*)string(dldi_tryingInterface() + string(".dldi")).c_str() ));
@@ -129,13 +403,24 @@ int main(int _argc, sint8 **_argv) {
 	initFBModeSubEngine0x06200000();
 	renderFBMode3SubEngine((u16*)&TGDSLogoNDSSize[0], (int)TGDSLOGONDSSIZE_WIDTH,(int)TGDSLOGONDSSIZE_HEIGHT);
 	
+	/*
+	//tested, working
+	char *filenameIn = "0:/music/291.mp3";
+	char *filenameOut = "0:/music/291.lzss";
+	
+	LZS_Encode(filenameIn, filenameOut);
+	remove(filenameIn);
+	LZS_Decode(filenameOut, filenameIn);
+	remove(filenameOut);
+	*/
+	
 	while (1){
 		scanKeys();
 		
 		if (keysPressed() & KEY_START){
 			char startPath[MAX_TGDSFILENAME_LENGTH+1];
 			sprintf(startPath,"%s","/");
-			while( ShowBrowser((char *)startPath, (char *)&curChosenBrowseFile[0]) == true ){	//as long you keep using directories ShowBrowser will be true
+			while( ShowBrowserCustom((char *)startPath, (char *)&curChosenBrowseFile[0]) == true ){	//as long you keep using directories ShowBrowser will be true
 				
 			}
 			while(keysPressed() & KEY_START){

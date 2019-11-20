@@ -75,6 +75,7 @@ export DIRS_ARM9_SRC := source/	\
 			source/interrupts/	\
 			source/gui/	\
 			source/data/	\
+			source/compressor/	\
 			../common/	\
 			../common/templateCode/
 			
@@ -82,6 +83,7 @@ export DIRS_ARM9_HEADER = include/	\
 			source/interrupts/	\
 			source/gui/	\
 			source/data/	\
+			source/compressor/	\
 			../common/	\
 			../common/templateCode/	\
 			../$(PosIndCodeDIR_FILENAME)/$(DIR_ARM9)/include/
