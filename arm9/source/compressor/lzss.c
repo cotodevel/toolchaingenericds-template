@@ -141,7 +141,7 @@ bool LZS_Decode(const char *filenameIn, const  char *filenameOut) {
   if (header != CMD_CODE_10) {
     free(pak_buffer);
     printf("ERROR: file is not LZSS encoded!");
-	return false;;
+	return false;
   }
   
   raw_len = *(unsigned int *)pak_buffer >> 8;

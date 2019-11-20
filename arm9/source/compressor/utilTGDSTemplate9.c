@@ -44,3 +44,19 @@ USA
 int filelength(int StructFD){
 	return fatfs_fsize(StructFD);
 }
+
+
+void dumpObjToFile(u8 * buf, int size, char * filenameOut){
+	FILE * fh = fopen(filenameOut, "w+");
+	if(fh != NULL){
+		int written = fwrite(buf, 1, size, fh);
+		fclose(fh);
+		
+		if(written == size){
+			printf("object %s dumped correctly. ", filenameOut);
+		}
+		else{
+			printf("failed to dump object %s. ", filenameOut);
+		}
+	}
+}

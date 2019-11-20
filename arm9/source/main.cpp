@@ -25,9 +25,9 @@ USA
 #include "gui_console_connector.h"
 #include "dswnifi_lib.h"
 #include "dldi.h"
-#include "TGDSNDSLogo.h"
 #include "fileBrowse.hpp"	//generic template functions from TGDS: maintain 1 source, whose changes are globally accepted by all TGDS Projects.
 #include "utilTGDSTemplate9.h"
+#include "TGDSLogoLZSSCompressed.h"
 
 //C++ part
 using namespace std;
@@ -399,20 +399,8 @@ int main(int _argc, sint8 **_argv) {
 	//VRAM A Used by console
 	//VRAM C Keyboard and/or TGDS Logo
 	
-	printf("BMPBG is at: %x", &TGDSLogoNDSSize);
-	initFBModeSubEngine0x06200000();
-	renderFBMode3SubEngine((u16*)&TGDSLogoNDSSize[0], (int)TGDSLOGONDSSIZE_WIDTH,(int)TGDSLOGONDSSIZE_HEIGHT);
-	
-	/*
-	//tested, working
-	char *filenameIn = "0:/music/291.mp3";
-	char *filenameOut = "0:/music/291.lzss";
-	
-	LZS_Encode(filenameIn, filenameOut);
-	remove(filenameIn);
-	LZS_Decode(filenameOut, filenameIn);
-	remove(filenameOut);
-	*/
+	//render TGDSLogo from a LZSS compressed file
+	RenderTGDSLogoSubEngine((uint8*)&TGDSLogoLZSSCompressed[0], TGDSLogoLZSSCompressed_size);
 	
 	while (1){
 		scanKeys();
