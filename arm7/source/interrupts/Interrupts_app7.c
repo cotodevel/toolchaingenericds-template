@@ -31,7 +31,18 @@ __attribute__((section(".itcm")))
 #endif
 inline __attribute__((always_inline)) 
 void IpcSynchandlerUser(){
-	
+	uint8 ipcByte = receiveByteIPC();
+	switch(ipcByte){
+		case(READ_EXTARM_IPC):{
+			SendFIFOWords((u32)0x111111ff, (uint32) 1);
+		}
+		break;
+		
+		default:{
+			
+		}
+		break;
+	}
 }
 
 #ifdef ARM9

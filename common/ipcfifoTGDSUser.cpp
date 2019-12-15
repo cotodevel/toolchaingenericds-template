@@ -62,7 +62,10 @@ void HandleFifoNotEmptyWeakRef(uint32 cmd1,uint32 cmd2){
 		
 		//NDS9: 
 		#ifdef ARM9
-		
+		case(0x111111ff):{
+			printf("IPC IRQ!");
+		}
+		break;
 		#endif
 	}
 	

@@ -1,5 +1,4 @@
 /*
-
 			Copyright (C) 2017  Coto
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -25,9 +24,11 @@ USA
 #include "gui_console_connector.h"
 #include "dswnifi_lib.h"
 #include "dldi.h"
+#include "ipcfifoTGDS.h"
 #include "fileBrowse.hpp"	//generic template functions from TGDS: maintain 1 source, whose changes are globally accepted by all TGDS Projects.
 #include "utilTGDSTemplate9.h"
 #include "TGDSLogoLZSSCompressed.h"
+#include "nds_cp15_misc.h"
 
 //C++ part
 using namespace std;
@@ -367,6 +368,8 @@ vector<string> splitCustom(string str, string token){
     return result;
 }
 
+struct sSharedSENDCtx SENDCtxInst;
+
 int main(int _argc, sint8 **_argv) {
 	
 	/*			TGDS 1.5 Standard ARM9 Init code start	*/
@@ -391,6 +394,7 @@ int main(int _argc, sint8 **_argv) {
 	switch_dswnifi_mode(dswifi_idlemode);
 	/*			TGDS 1.5 Standard ARM9 Init code end	*/
 	
+	
 	//custom Handler
 	setupCustomExceptionHandler((uint32*)&CustomDebugHandler);
 	menuShow();
@@ -401,6 +405,21 @@ int main(int _argc, sint8 **_argv) {
 	
 	//render TGDSLogo from a LZSS compressed file
 	RenderTGDSLogoSubEngine((uint8*)&TGDSLogoLZSSCompressed[0], TGDSLogoLZSSCompressed_size);
+	
+	
+	
+	/*
+	printf("SendBufferThroughFIFOIrqsAsync() start.");
+	u32 * buf = (u32*)0x02000000;
+	struct sSharedSENDCtx * uncachedCtx = (struct sSharedSENDCtx *) ( ((u32)&SENDCtxInst) + 0x400000);
+
+	SendBufferThroughFIFOIrqsAsync((u32)0x03800000, (u32)buf, 64*4, uncachedCtx);
+	printf("SendBufferThroughFIFOIrqsAsync() done.");
+	printf("%x[%x] - %x[%x]", (u32)&buf[1], *((u32*)&buf[1]), (u32)(&buf[4]) , *((u32*)&buf[4]) );
+	printf("%x[%x] - %x[%x]", (u32)&buf[0xc], *((u32*)&buf[0xc]), (u32)(&buf[0x10]) , *((u32*)&buf[0x10]) );
+	
+	while(1==1);
+	*/
 	
 	while (1){
 		scanKeys();
@@ -513,6 +532,15 @@ int main(int _argc, sint8 **_argv) {
 				scanKeys();
 			}
 		}
+		
+		
+		if (keysPressed() & KEY_LEFT){
+			sendByteIPC(READ_EXTARM_IPC);	//should trigger a FIFO IRQ
+			while(keysPressed() & KEY_LEFT){
+				scanKeys();
+			}
+		}
+		
 		
 		IRQVBlankWait();
 	}
