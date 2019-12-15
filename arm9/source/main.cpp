@@ -535,7 +535,7 @@ int main(int _argc, sint8 **_argv) {
 		
 		
 		if (keysPressed() & KEY_LEFT){
-			sendByteIPC(READ_EXTARM_IPC);	//should trigger a FIFO IRQ
+			sendByteIPC(READ_EXTARM_IPC);	//should trigger a IPC IRQ
 			while(keysPressed() & KEY_LEFT){
 				scanKeys();
 			}
