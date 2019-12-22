@@ -25,7 +25,7 @@ USA
 #include "dswnifi_lib.h"
 #include "dldi.h"
 #include "ipcfifoTGDS.h"
-#include "fileBrowse.hpp"	//generic template functions from TGDS: maintain 1 source, whose changes are globally accepted by all TGDS Projects.
+#include "fileBrowse.h"	//generic template functions from TGDS: maintain 1 source, whose changes are globally accepted by all TGDS Projects.
 #include "utilTGDSTemplate9.h"
 #include "TGDSLogoLZSSCompressed.h"
 #include "nds_cp15_misc.h"
@@ -37,6 +37,10 @@ using namespace std;
 #include <cmath>
 
 char curChosenBrowseFile[MAX_TGDSFILENAME_LENGTH+1];
+
+static inline string ToStr( char c ) {
+   return string( 1, c );
+}
 
 //example: std::string OverrideFileExtension("filename.txt", ".zip")
 static inline std::string OverrideFileExtension(const std::string& FileName, const std::string& newExt)
@@ -74,25 +78,32 @@ static inline bool ShowBrowserCustom(char * Path, char * outBuf){
 	//OK, use the new CWD and build the playlist
 	internalName.push_back(&filStub);
 	
-	int retf = FAT_FindFirstFile(fname);
-	while(retf != FT_NONE){
-		struct FileClass * fileClassInst = NULL;
+	//Create TGDS Dir API context
+	struct FileClassList * fileClassListCtx = initFileList();
+	cleanFileList(fileClassListCtx);
+	
+	int startFromIndex = 0;
+	struct FileClass * fileClassInst = NULL;
+	fileClassInst = FAT_FindFirstFile(fname, fileClassListCtx, startFromIndex);
+	while(fileClassInst != NULL){
 		//directory?
-		if(retf == FT_DIR){
-			fileClassInst = getFileClassFromList(LastDirEntry);
-			std::string outDirName = string(fileClassInst->fd_namefullPath);
-			sprintf(fileClassInst->fd_namefullPath,"%s",parseDirNameTGDS(outDirName).c_str());
+		if(fileClassInst->type == FT_DIR){
+			char tmpBuf[MAX_TGDSFILENAME_LENGTH+1];
+			strcpy(tmpBuf, fname);
+			parseDirNameTGDS(tmpBuf);
+			strcpy(fileClassInst->fd_namefullPath, tmpBuf);
 		}
 		//file?
-		else if(retf == FT_FILE){
-			fileClassInst = getFileClassFromList(LastFileEntry); 
-			std::string outFileName = string(fileClassInst->fd_namefullPath);
-			sprintf(fileClassInst->fd_namefullPath,"%s",parsefileNameTGDS(outFileName).c_str());
+		else if(fileClassInst->type == FT_FILE){
+			char tmpBuf[MAX_TGDSFILENAME_LENGTH+1];
+			strcpy(tmpBuf, fname);
+			parsefileNameTGDS(tmpBuf);
+			strcpy(fileClassInst->fd_namefullPath, tmpBuf);
 		}
 		internalName.push_back(fileClassInst);
 		
 		//more file/dir objects?
-		retf = FAT_FindNextFile(fname);
+		fileClassInst = FAT_FindNextFile(fname, fileClassListCtx);
 	}
 	
 	//actual file lister
@@ -253,12 +264,20 @@ static inline bool ShowBrowserCustom(char * Path, char * outBuf){
 	//enter a dir
 	if(reloadDirA == true){
 		internalName.clear();
+		
+		//Free TGDS Dir API context
+		freeFileList(fileClassListCtx);
+		
 		enterDir((char*)newDir.c_str());
 		return true;
 	}
 	
 	//leave a dir
 	if(reloadDirB == true){
+	
+		//Free TGDS Dir API context
+		freeFileList(fileClassListCtx);
+		
 		//rewind to preceding dir in TGDSCurrentWorkingDirectory
 		leaveDir(getTGDSCurrentWorkingDirectory());
 		return true;
@@ -306,8 +325,11 @@ static inline bool ShowBrowserCustom(char * Path, char * outBuf){
 			scanKeys();
 			IRQWait(IRQ_VBLANK);
 		}
-		
 	}
+	
+	//Free TGDS Dir API context
+	freeFileList(fileClassListCtx);
+	
 	return false;
 }
 
@@ -490,28 +512,43 @@ int main(int _argc, sint8 **_argv) {
 			std::ofstream outfile;
 			outfile.open(fOut.c_str());
 			char fname[MAX_TGDSFILENAME_LENGTH+1] = {0};
-			int retf = FAT_FindFirstFile(fname);
-			while(retf != FT_NONE){
+			
+			//Create TGDS Dir API context
+			struct FileClassList * fileClassListCtx = initFileList();
+			cleanFileList(fileClassListCtx);
+			
+			//Use TGDS Dir API context
+			int startFromIndex = 0;
+			struct FileClass * fileClassInst = NULL;
+			fileClassInst = FAT_FindFirstFile(fname, fileClassListCtx, startFromIndex);			
+			while(fileClassInst != NULL){
 				std::string fnameOut = std::string("");
 				//directory?
-				if(retf == FT_DIR){
-					struct FileClass * fileClassInst = getFileClassFromList(LastDirEntry);
-					std::string outDirName = string(fileClassInst->fd_namefullPath);
-					fnameOut = parseDirNameTGDS(outDirName) + string("/<dir>");
+				if(fileClassInst->type == FT_DIR){
+					char tmpBuf[MAX_TGDSFILENAME_LENGTH+1];
+					strcpy(tmpBuf, fname);
+					parseDirNameTGDS(tmpBuf);					
+					fnameOut = string(tmpBuf) + string("/<dir>");
 				}
 				//file?
-				else if(retf == FT_FILE){
-					std::string outfileName = string(fname);
-					fnameOut = parsefileNameTGDS(outfileName);
+				else if(fileClassInst->type == FT_FILE){
+					char tmpBuf[MAX_TGDSFILENAME_LENGTH+1];
+					strcpy(tmpBuf, fname);
+					parsefileNameTGDS(tmpBuf);					
+					fnameOut = string(tmpBuf);
 				}
 				outfile << fnameOut << endl;
 				
 				//more file/dir objects?
-				retf = FAT_FindNextFile(fname);
+				fileClassInst = FAT_FindNextFile(fname, fileClassListCtx);
 			}
+			
+			//Free TGDS Dir API context
+			freeFileList(fileClassListCtx);
 			
 			outfile.close();
 			printf("filelist %s saved.", fOut.c_str());
+			
 			while(keysPressed() & KEY_X){
 				scanKeys();
 			}
