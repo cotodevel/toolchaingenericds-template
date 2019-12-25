@@ -29,6 +29,8 @@ USA
 #include "utilTGDSTemplate9.h"
 #include "TGDSLogoLZSSCompressed.h"
 #include "nds_cp15_misc.h"
+#include "click_raw.h"
+#include "soundTGDS.h"
 
 //C++ part
 using namespace std;
@@ -344,6 +346,9 @@ void menuShow(){
 	printf("Y: Read File: 0:/filelist.txt");
 	printf("X: generate root file list into 0:/filelist.txt");
 	printf("L: dump dldi file to %s",getDldiDefaultPath().c_str());
+	printf("D-PAD Left: test IPC Irqs");
+	printf("D-PAD Down: Sound click test ");
+	
 	printf("Start: simple file browser");
 	printf("Select: this menu");
 }
@@ -574,6 +579,16 @@ int main(int _argc, sint8 **_argv) {
 		if (keysPressed() & KEY_LEFT){
 			sendByteIPC(READ_EXTARM_IPC);	//should trigger a IPC IRQ
 			while(keysPressed() & KEY_LEFT){
+				scanKeys();
+			}
+		}
+		
+		if (keysPressed() & KEY_DOWN){
+			
+			u8 channel = 0;	//-1 == auto allocate any channel in the 0--15 range
+			setSoundSampleContext(11025, (u32*)&click_raw[0], click_raw_size, channel, 40, 63, 1);	//PCM16 sample
+			
+			while(keysPressed() & KEY_DOWN){
 				scanKeys();
 			}
 		}
