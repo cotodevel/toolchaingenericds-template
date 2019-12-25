@@ -577,7 +577,7 @@ int main(int _argc, sint8 **_argv) {
 		
 		
 		if (keysPressed() & KEY_LEFT){
-			sendByteIPC(READ_EXTARM_IPC);	//should trigger a IPC IRQ
+			sendByteIPC(0x8);	//should trigger a IPC IRQ
 			while(keysPressed() & KEY_LEFT){
 				scanKeys();
 			}

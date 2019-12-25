@@ -33,8 +33,8 @@ inline __attribute__((always_inline))
 void IpcSynchandlerUser(){
 	uint8 ipcByte = receiveByteIPC();
 	switch(ipcByte){
-		case(READ_EXTARM_IPC):{
-			SendFIFOWords((u32)0x111111ff, (uint32) 1);
+		case(0x8):{
+			SendFIFOWords((u32)0x111111ff, (uint32) 0);
 		}
 		break;
 		
