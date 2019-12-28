@@ -24,6 +24,8 @@ USA
 #include "interrupts.h"
 #include "biosTGDS.h"
 #include "ipcfifoTGDSUser.h"
+#include "spifwTGDS.h"
+#include "wifi_arm7.h"
 
 //User Handler Definitions
 #ifdef ARM9
@@ -58,6 +60,7 @@ __attribute__((section(".itcm")))
 #endif
 inline __attribute__((always_inline)) 
 void Timer1handlerUser(){
+
 }
 
 #ifdef ARM9
@@ -65,6 +68,7 @@ __attribute__((section(".itcm")))
 #endif
 inline __attribute__((always_inline)) 
 void Timer2handlerUser(){
+
 }
 
 #ifdef ARM9
@@ -72,6 +76,7 @@ __attribute__((section(".itcm")))
 #endif
 inline __attribute__((always_inline)) 
 void Timer3handlerUser(){
+
 }
 
 #ifdef ARM9
@@ -79,6 +84,7 @@ __attribute__((section(".itcm")))
 #endif
 inline __attribute__((always_inline)) 
 void HblankUser(){
+
 }
 
 #ifdef ARM9
@@ -100,6 +106,7 @@ __attribute__((section(".itcm")))
 #endif
 inline __attribute__((always_inline)) 
 void VcounterUser(){
+
 }
 
 //Note: this event is hardware triggered from ARM7, on ARM9 a signal is raised through the FIFO hardware
@@ -108,6 +115,8 @@ __attribute__((section(".itcm")))
 #endif
 inline __attribute__((always_inline)) 
 void screenLidHasOpenedhandlerUser(){
+	setBacklight(POWMAN_BACKLIGHT_TOP_BIT | POWMAN_BACKLIGHT_BOTTOM_BIT);	//both lit screens
+	SetLedState(LED_ON);
 	isArm7ClosedLid = false;
 }
 
@@ -118,4 +127,5 @@ __attribute__((section(".itcm")))
 inline __attribute__((always_inline)) 
 void screenLidHasClosedhandlerUser(){
 	setBacklight(0);
+	SetLedState(LED_LONGBLINK);
 }
