@@ -15,8 +15,8 @@ After compiling, run the example in NDS.
 Project Specific description:
 The ToolchainGenericDS homebrew template. Use it for writing NDS homebrew from scratch and/or porting stuff from other platforms/devkits.
 
-Select: ToolchainGenericDS-template menu
-Start: Start GDB Debugger
+Button (Select): ToolchainGenericDS-template menu
+Button (Start): Start GDB Debugger
 
 
 Coto
