@@ -25,7 +25,6 @@ USA
 //		struct sIPCSharedTGDSSpecific * TGDSUSERIPC = (struct sIPCSharedTGDSSpecific *)TGDSIPCUserStartAddress;		// Access to TGDS Project (User) IPC FIFO structure	(ipcfifoTGDSUser.h)
 
 
-//inherits what is defined in: ipcfifoTGDS.h
 #ifndef __specific_shared_h__
 #define __specific_shared_h__
 

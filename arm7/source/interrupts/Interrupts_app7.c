@@ -28,23 +28,13 @@ USA
 #include "wifi_arm7.h"
 
 //User Handler Definitions
+
 #ifdef ARM9
 __attribute__((section(".itcm")))
 #endif
 inline __attribute__((always_inline)) 
 void IpcSynchandlerUser(){
-	uint8 ipcByte = receiveByteIPC();
-	switch(ipcByte){
-		case(0x8):{
-			SendFIFOWords((u32)0x111111ff, (uint32) 0);
-		}
-		break;
-		
-		default:{
-			
-		}
-		break;
-	}
+	
 }
 
 #ifdef ARM9
@@ -108,6 +98,7 @@ inline __attribute__((always_inline))
 void VcounterUser(){
 
 }
+
 
 //Note: this event is hardware triggered from ARM7, on ARM9 a signal is raised through the FIFO hardware
 #ifdef ARM9

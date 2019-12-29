@@ -18,13 +18,12 @@
 
 #TGDS1.5 compatible Makefile
 
-#ToolchainGenericDS specific: 
-#Non FPIC Code: Use Makefiles from either TGDS, or custom
+#ToolchainGenericDS specific: Use Makefiles from either TGDS, or custom
 export SOURCE_MAKEFILE7 = default
 export SOURCE_MAKEFILE9 = default
 
+#Non FPIC Code: Use Makefiles from either TGDS, or custom
 #FPIC code is always default TGDS Makefile
-
 
 #Shared
 include $(DEFAULT_GCC_PATH)Makefile.basenewlib
@@ -38,7 +37,9 @@ export EXECUTABLE_VERSION =	"$(EXECUTABLE_VERSION_HEADER)"
 #The ndstool I use requires to have the elf section removed, so these rules create elf headerless- binaries.
 export BINSTRIP_RULE_7 =	arm7.bin
 export BINSTRIP_RULE_9 =	arm9.bin
+export DIR_ARM7 = arm7
 export BUILD_ARM7	=	build
+export DIR_ARM9 = arm9
 export BUILD_ARM9	=	build
 export ELF_ARM7 = arm7.elf
 export ELF_ARM9 = arm9.elf
@@ -58,14 +59,12 @@ export TARGET_LIBRARY_FILE_9	=	lib$(TARGET_LIBRARY_NAME_9).a
 #####################################################ARM7#####################################################
 
 export DIRS_ARM7_SRC = source/	\
-			data/	\
 			source/interrupts/	\
 			../common/	\
 			../common/templateCode/source	\
-			../common/templateCode/data	
-
+			../common/templateCode/data
+			
 export DIRS_ARM7_HEADER = source/	\
-			data/	\
 			source/interrupts/	\
 			include/	\
 			../common/	\
@@ -73,30 +72,24 @@ export DIRS_ARM7_HEADER = source/	\
 			../common/templateCode/data	\
 			build/	\
 			../$(PosIndCodeDIR_FILENAME)/$(DIR_ARM7)/include/
-			
 #####################################################ARM9#####################################################
 
-export DIRS_ARM9_SRC := source/	\
-			data/	\
+export DIRS_ARM9_SRC = data/	\
+			source/	\
 			source/interrupts/	\
 			source/gui/	\
-			source/compressor/	\
 			../common/	\
 			../common/templateCode/source	\
 			../common/templateCode/data	
-
-export DIRS_ARM9_HEADER = include/	\
-			data/	\
+			
+export DIRS_ARM9_HEADER = data/	\
 			build/	\
-			source/interrupts/	\
+			include/	\
 			source/gui/	\
-			source/compressor/	\
 			../common/	\
 			../common/templateCode/source	\
 			../common/templateCode/data	\
-			build/	\
 			../$(PosIndCodeDIR_FILENAME)/$(DIR_ARM9)/include/
-
 # Build Target(s)	(both processors here)
 all: $(EXECUTABLE_FNAME)
 #all:	debug
@@ -111,7 +104,6 @@ compile	:
 	-$(MAKE)	-R	-C	$(PosIndCodeDIR_FILENAME)/$(DIR_ARM7)/
 	-cp	-r	$(TARGET_LIBRARY_MAKEFILES_SRC9_FPIC)	$(CURDIR)/$(PosIndCodeDIR_FILENAME)/$(DIR_ARM9)
 	-$(MAKE)	-R	-C	$(PosIndCodeDIR_FILENAME)/$(DIR_ARM9)/
-	
 ifeq ($(SOURCE_MAKEFILE7),default)
 	cp	-r	$(TARGET_LIBRARY_MAKEFILES_SRC7_NOFPIC)	$(CURDIR)/$(DIR_ARM7)
 endif
@@ -120,7 +112,7 @@ ifeq ($(SOURCE_MAKEFILE9),default)
 	cp	-r	$(TARGET_LIBRARY_MAKEFILES_SRC9_NOFPIC)	$(CURDIR)/$(DIR_ARM9)
 endif
 	$(MAKE)	-R	-C	$(DIR_ARM9)/
-
+	
 $(EXECUTABLE_FNAME)	:	compile
 	-@echo 'ndstool begin'
 	$(NDSTOOL)	-v	-c $@	-7  $(CURDIR)/arm7/$(BINSTRIP_RULE_7)	-e7  0x03800000	-9 $(CURDIR)/arm9/$(BINSTRIP_RULE_9) -e9  0x02000000
@@ -136,7 +128,7 @@ clean:
 ifeq ($(SOURCE_MAKEFILE7),default)
 	-@rm -rf $(CURDIR)/$(DIR_ARM7)/Makefile
 endif
-#--------------------------------------------------------------------	
+#--------------------------------------------------------------------
 	$(MAKE)	clean	-C	$(DIR_ARM9)/
 	$(MAKE) clean	-C	$(PosIndCodeDIR_FILENAME)/$(DIR_ARM9)/
 ifeq ($(SOURCE_MAKEFILE9),default)

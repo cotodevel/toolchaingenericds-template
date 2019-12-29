@@ -23,17 +23,7 @@ USA
 
 #include "typedefsTGDS.h"
 #include "dsregs.h"
-#include "dsregs_asm.h"
-
-#include "fatfslayerTGDS.h"
-
-#ifdef __cplusplus
-//C++ part
-using namespace std;
-#include <string>
-
-#endif
-
+#include "limitsTGDS.h"
 
 #endif
 
@@ -43,11 +33,7 @@ extern "C" {
 #endif
 
 extern int main(int _argc, sint8 **_argv);
-extern char curChosenBrowseFile[MAX_TGDSFILENAME_LENGTH+1];
-
-#ifdef __cplusplus
-extern std::string getDldiDefaultPath();
-#endif
+extern char curGDBFile[MAX_TGDSFILENAME_LENGTH+1];
 
 #ifdef __cplusplus
 }

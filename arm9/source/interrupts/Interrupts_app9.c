@@ -20,10 +20,12 @@ USA
 
 #include "InterruptsARMCores_h.h"
 #include "ipcfifoTGDSUser.h"
+#include "consoleTGDS.h"
 #include "dsregs_asm.h"
 #include "main.h"
 #include "keypadTGDS.h"
 #include "interrupts.h"
+#include "dswnifi_lib.h"
 #include "utilsTGDS.h"
 #include "spifwTGDS.h"
 
@@ -42,6 +44,7 @@ __attribute__((section(".itcm")))
 #endif
 inline __attribute__((always_inline)) 
 void Timer0handlerUser(){
+
 }
 
 #ifdef ARM9
@@ -49,6 +52,7 @@ __attribute__((section(".itcm")))
 #endif
 inline __attribute__((always_inline)) 
 void Timer1handlerUser(){
+
 }
 
 #ifdef ARM9
@@ -56,6 +60,7 @@ __attribute__((section(".itcm")))
 #endif
 inline __attribute__((always_inline)) 
 void Timer2handlerUser(){
+
 }
 
 #ifdef ARM9
@@ -63,6 +68,7 @@ __attribute__((section(".itcm")))
 #endif
 inline __attribute__((always_inline)) 
 void Timer3handlerUser(){
+
 }
 
 #ifdef ARM9
@@ -70,6 +76,7 @@ __attribute__((section(".itcm")))
 #endif
 inline __attribute__((always_inline)) 
 void HblankUser(){
+
 }
 
 #ifdef ARM9
@@ -92,6 +99,7 @@ __attribute__((section(".itcm")))
 inline __attribute__((always_inline)) 
 void VcounterUser(){
 }
+
 
 //Note: this event is hardware triggered from ARM7, on ARM9 a signal is raised through the FIFO hardware
 #ifdef ARM9
