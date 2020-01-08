@@ -38,6 +38,7 @@ static inline void menuShow(){
 	printf("toolchaingenericds-template ");
 	printf("(Select): This menu. ");
 	printf("(Start): GDB Debugging. ");
+	printf("Available heap memory: %d", getMaxRam());
 }
 
 int main(int _argc, sint8 **_argv) {
