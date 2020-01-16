@@ -21,14 +21,13 @@ USA
 #include "main.h"
 #include "typedefsTGDS.h"
 #include "dsregs.h"
-//#include "dsregs_asm.h"
 #include "dswnifi_lib.h"
 #include "keypadTGDS.h"
-//#include "keyboard.h"
-//#include "busTGDS.h"
 #include "TGDSLogoLZSSCompressed.h"
 #include "fileBrowse.h"	//generic template functions from TGDS: maintain 1 source, whose changes are globally accepted by all TGDS Projects.
 #include "biosTGDS.h"
+#include "ipcfifoTGDSUser.h"
+#include "dldi.h"
 
 static inline void menuShow(){
 	clrscr();
@@ -53,6 +52,7 @@ int main(int _argc, sint8 **_argv) {
 	printf("              ");
 	printf("              ");
 	
+	setDLDIARM7Address((u32 *)TGDSDLDI_ARM7_ADDRESS);	//Required by ARM7DLDI!
 	int ret=FS_init();
 	if (ret == 0)
 	{
