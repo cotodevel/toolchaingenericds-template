@@ -28,6 +28,7 @@ USA
 #include "biosTGDS.h"
 #include "ipcfifoTGDSUser.h"
 #include "dldi.h"
+#include "global_settings.h"
 
 static inline void menuShow(){
 	clrscr();
@@ -51,8 +52,9 @@ int main(int _argc, sint8 **_argv) {
 	
 	printf("              ");
 	printf("              ");
-	
+	#ifdef ARM7_DLDI
 	setDLDIARM7Address((u32 *)TGDSDLDI_ARM7_ADDRESS);	//Required by ARM7DLDI!
+	#endif
 	int ret=FS_init();
 	if (ret == 0)
 	{
