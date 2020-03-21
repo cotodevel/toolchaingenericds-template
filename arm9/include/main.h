@@ -33,7 +33,6 @@ extern "C" {
 #endif
 
 extern int main(int _argc, sint8 **_argv);
-extern char curGDBFile[MAX_TGDSFILENAME_LENGTH+1];
 
 #ifdef __cplusplus
 }
