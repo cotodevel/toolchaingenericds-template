@@ -39,6 +39,7 @@ static inline void menuShow(){
 	printf("(Select): This menu. ");
 	printf("(Start): GDB Debugging. ");
 	printf("Available heap memory: %d", getMaxRam());
+	printf("ARM7 Status: %s", printf7Buffer);
 }
 
 int main(int _argc, sint8 **_argv) {
