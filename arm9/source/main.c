@@ -38,6 +38,7 @@ static inline void menuShow(){
 	printf("toolchaingenericds-template ");
 	printf("(Select): This menu. ");
 	printf("(Start): GDB Debugging. ");
+	printf("(Down): Printf7 Debugging. ");
 	printf("Available heap memory: %d", getMaxRam());
 	printf("ARM7 Status: %s", getarm7DebugBuffer());
 }
@@ -86,6 +87,15 @@ int main(int _argc, sint8 **_argv) {
 				scanKeys();
 			}
 		}
+		
+		if (keysPressed() & KEY_DOWN){
+			scanKeys();
+			SendFIFOWords(0xc1111111, 0);
+			while(keysPressed() & KEY_DOWN){
+				scanKeys();
+			}
+		}
+		
 		
 		if (keysPressed() & KEY_START){
 			
