@@ -40,7 +40,7 @@ static inline void menuShow(){
 	printf("(Start): GDB Debugging. ");
 	printf("(Down): Printf7 Debugging. ");
 	printf("Available heap memory: %d", getMaxRam());
-	printf("ARM7 Status: %s", getarm7DebugBuffer());
+	printarm7DebugBuffer();
 }
 
 int main(int _argc, sint8 **_argv) {
