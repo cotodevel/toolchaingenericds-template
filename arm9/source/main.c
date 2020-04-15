@@ -29,6 +29,8 @@ USA
 #include "ipcfifoTGDSUser.h"
 #include "dldi.h"
 #include "global_settings.h"
+#include "posixHandleTGDS.h"
+#include "TGDSMemoryAllocator.h"
 
 static inline void menuShow(){
 	clrscr();
@@ -49,7 +51,7 @@ int main(int _argc, sint8 **_argv) {
 	bool isTGDSCustomConsole = false;	//set default console or custom console: default console
 	GUI_init(isTGDSCustomConsole);
 	GUI_clear();
-	
+	setTGDSMemoryAllocator(getProjectSpecificMemoryAllocatorSetup());
 	sint32 fwlanguage = (sint32)getLanguage();
 	
 	printf("              ");
