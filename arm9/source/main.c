@@ -31,17 +31,17 @@ USA
 #include "global_settings.h"
 #include "posixHandleTGDS.h"
 #include "TGDSMemoryAllocator.h"
+#include "consoleTGDS.h"
 
 static inline void menuShow(){
 	clrscr();
 	printf("     ");
 	printf("     ");
-	
-	printf("toolchaingenericds-template ");
-	printf("(Select): This menu. ");
-	printf("(Start): GDB Debugging. ");
-	printf("(Down): Printf7 Debugging. ");
-	printf("Available heap memory: %d", getMaxRam());
+	printf("toolchaingenericds-template: ");
+	printf("(Select): This menu. >%d", TGDSPrintfColor_Red);
+	printf("(Start): GDB Debugging. >%d", TGDSPrintfColor_Green);
+	printf("(Down): Printf7 Debugging. >%d", TGDSPrintfColor_Blue);
+	printf("Available heap memory: %d >%d", getMaxRam(), TGDSPrintfColor_Cyan);
 	printarm7DebugBuffer();
 }
 
