@@ -65,11 +65,14 @@ void HandleFifoNotEmptyWeakRef(uint32 cmd1,uint32 cmd2){
 			printf7("This is a test: Args:", 3, (int)&argBuffer[0]);
 		}
 		break;
+		case(0xc1111112):{
+			REG_IPC_SYNC|=IPC_SYNC_IRQ_REQUEST;	//Trigger IPC IRQ
+		}
+		break;
 		#endif
 		
 		//NDS9: 
 		#ifdef ARM9
-		
 		#endif
 	}
 	

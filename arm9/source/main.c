@@ -41,6 +41,7 @@ static inline void menuShow(){
 	printf("(Select): This menu. >%d", TGDSPrintfColor_Red);
 	printf("(Start): GDB Debugging. >%d", TGDSPrintfColor_Green);
 	printf("(Down): Printf7 Debugging. >%d", TGDSPrintfColor_Blue);
+	printf("(Up): Raw IPC IRQ from ARM7 >%d", TGDSPrintfColor_Brown);
 	printf("Available heap memory: %d >%d", getMaxRam(), TGDSPrintfColor_Cyan);
 	printarm7DebugBuffer();
 }
@@ -86,6 +87,14 @@ int main(int _argc, sint8 **_argv) {
 		if (keysPressed() & KEY_SELECT){
 			menuShow();
 			while(keysPressed() & KEY_SELECT){
+				scanKeys();
+			}
+		}
+		
+		if (keysPressed() & KEY_UP){
+			scanKeys();
+			SendFIFOWords(0xc1111112, 0);
+			while(keysPressed() & KEY_UP){
 				scanKeys();
 			}
 		}

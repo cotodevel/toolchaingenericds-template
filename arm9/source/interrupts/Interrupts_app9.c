@@ -39,6 +39,7 @@ void IpcSynchandlerUser(uint8 ipcByte){
 	switch(ipcByte){
 		default:{
 			//ipcByte should be the byte you sent from external ARM Core through sendByteIPC(ipcByte);
+			printf("ARM7:IPC_SYNC_IRQ_REQUEST");
 		}
 		break;
 	}
