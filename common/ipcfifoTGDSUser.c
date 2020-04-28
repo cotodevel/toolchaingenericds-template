@@ -66,7 +66,7 @@ void HandleFifoNotEmptyWeakRef(uint32 cmd1,uint32 cmd2){
 		}
 		break;
 		case(0xc1111112):{
-			REG_IPC_SYNC|=IPC_SYNC_IRQ_REQUEST;	//Trigger IPC IRQ
+			sendIPCIRQOnly();	//Trigger IPC IRQ
 		}
 		break;
 		#endif
