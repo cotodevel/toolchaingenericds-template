@@ -32,16 +32,20 @@ USA
 #include "posixHandleTGDS.h"
 #include "TGDSMemoryAllocator.h"
 #include "consoleTGDS.h"
+#include "soundTGDS.h"
+
+char curChosenBrowseFile[MAX_TGDSFILENAME_LENGTH+1];
 
 static inline void menuShow(){
 	clrscr();
 	printf("     ");
 	printf("     ");
 	printf("toolchaingenericds-template: ");
-	printf("(Select): This menu. >%d", TGDSPrintfColor_Red);
+	printf("(Select): This menu.");
 	printf("(Start): GDB Debugging. >%d", TGDSPrintfColor_Green);
-	printf("(Down): Printf7 Debugging. >%d", TGDSPrintfColor_Blue);
-	printf("(Up): Raw IPC IRQ from ARM7 >%d", TGDSPrintfColor_Brown);
+	printf("(Down): Printf7 Debugging.");
+	printf("(Up): then (A); Play .WAV File ");
+	printf("(B): stop .WAV playback ");
 	printf("Available heap memory: %d >%d", getMaxRam(), TGDSPrintfColor_Cyan);
 	printarm7DebugBuffer();
 }
@@ -92,9 +96,22 @@ int main(int _argc, sint8 **_argv) {
 		}
 		
 		if (keysPressed() & KEY_UP){
-			scanKeys();
-			SendFIFOWords(0xc1111112, 0);
+			char startPath[MAX_TGDSFILENAME_LENGTH+1];
+			strcpy(startPath, "/");
+			while( ShowBrowser((char *)startPath, (char *)&curChosenBrowseFile[0]) == true ){	//as long you keep using directories ShowBrowser will be true
+				
+			}
+			initSoundStream(curChosenBrowseFile);
 			while(keysPressed() & KEY_UP){
+				scanKeys();
+			}
+			menuShow();
+		}
+		
+		if (keysPressed() & KEY_B){
+			scanKeys();
+			freeSound();
+			while(keysPressed() & KEY_B){
 				scanKeys();
 			}
 		}

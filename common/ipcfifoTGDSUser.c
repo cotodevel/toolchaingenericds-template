@@ -65,10 +65,6 @@ void HandleFifoNotEmptyWeakRef(uint32 cmd1,uint32 cmd2){
 			printf7("This is a test: Args:", 3, (int)&argBuffer[0]);
 		}
 		break;
-		case(0xc1111112):{
-			sendIPCIRQOnly();	//Trigger IPC IRQ
-		}
-		break;
 		#endif
 		
 		//NDS9: 
