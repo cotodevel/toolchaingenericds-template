@@ -33,6 +33,7 @@ USA
 #include "TGDSMemoryAllocator.h"
 #include "consoleTGDS.h"
 #include "soundTGDS.h"
+#include "nds_cp15_misc.h"
 
 char curChosenBrowseFile[MAX_TGDSFILENAME_LENGTH+1];
 
@@ -74,6 +75,9 @@ int main(int _argc, sint8 **_argv) {
 		printf("FS Init error.");
 	}
 	switch_dswnifi_mode(dswifi_idlemode);
+	asm("mcr	p15, 0, r0, c7, c10, 4");
+	flush_icache_all();
+	flush_dcache_all();
 	/*			TGDS 1.5 Standard ARM9 Init code end	*/
 	
 	//Show logo
