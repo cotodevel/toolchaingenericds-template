@@ -62,7 +62,7 @@ void HandleFifoNotEmptyWeakRef(uint32 cmd1,uint32 cmd2){
 			argBuffer[0] = 0xc0701111;
 			argBuffer[1] = 0xc0702222;
 			argBuffer[2] = 0xc0703333;
-			printf7("This is a test: Args:", 3, (int)&argBuffer[0]);
+			printf7("This is a test: Args:", 3, (int*)&argBuffer[0]);
 		}
 		break;
 		#endif
