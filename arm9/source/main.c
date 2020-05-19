@@ -114,7 +114,7 @@ int main(int _argc, sint8 **_argv) {
 		
 		if (keysPressed() & KEY_B){
 			scanKeys();
-			freeSound();
+			stopSound(TGDSIPC->sndPlayerCtx.sourceFmt); //ARM9
 			while(keysPressed() & KEY_B){
 				scanKeys();
 			}
