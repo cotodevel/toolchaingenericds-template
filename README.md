@@ -1,3 +1,5 @@
+![ToolchainGenericDS](img/TGDS-BannerLogo.png)
+
 This is the ToolchainGenericDS template project:
 
 1.	Compile Toolchain:
