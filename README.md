@@ -1,4 +1,4 @@
-![ToolchainGenericDS](img/TGDS-BannerLogo.png)
+![ToolchainGenericDS](img/TGDS-Logo.png)
 
 This is the ToolchainGenericDS template project:
 
