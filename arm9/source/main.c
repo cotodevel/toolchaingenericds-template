@@ -51,6 +51,8 @@ static inline void menuShow(){
 	printf("(B): stop .WAV playback ");
 	printf("Available heap memory: %d >%d", getMaxRam(), TGDSPrintfColor_Cyan);
 	printarm7DebugBuffer();
+	printf("DLDI Name: %s >%d", dldi_tryingInterface(), TGDSPrintfColor_Red);
+	
 }
 
 int main(int argc, char argv[argvItems][MAX_TGDSFILENAME_LENGTH]) {
