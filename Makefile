@@ -20,7 +20,7 @@
 
 #ToolchainGenericDS specific: Use Makefiles from either TGDS, or custom
 export SOURCE_MAKEFILE7 = default
-export SOURCE_MAKEFILE9 = custom
+export SOURCE_MAKEFILE9 = default
 
 #Non FPIC Code: Use Makefiles from either TGDS, or custom
 #FPIC code is always default TGDS Makefile
@@ -57,7 +57,7 @@ export TARGET_LIBRARY_CRT0_FILE_COMPRESSED_9 = nds_arm_ld_crt0
 
 export TARGET_LIBRARY_LINKER_FILE_7 = $(TARGET_LIBRARY_PATH)$(TARGET_LIBRARY_LINKER_SRC)/$(TARGET_LIBRARY_CRT0_FILE_7).S
 export TARGET_LIBRARY_LINKER_FILE_9 = $(TARGET_LIBRARY_PATH)$(TARGET_LIBRARY_LINKER_SRC)/$(TARGET_LIBRARY_CRT0_FILE_9).S
-export TARGET_LIBRARY_LINKER_FILE_COMPRESSED_9 = $(CURDIR)/$(DECOMPRESSOR_BOOTCODE_9)/$(TARGET_LIBRARY_CRT0_FILE_COMPRESSED_9).S
+export TARGET_LIBRARY_LINKER_FILE_COMPRESSED_9 = $(CURDIR)/common/templateCode/source/$(DECOMPRESSOR_BOOTCODE_9)/$(TARGET_LIBRARY_CRT0_FILE_COMPRESSED_9).S
 
 export TARGET_LIBRARY_NAME_7 = toolchaingen7
 export TARGET_LIBRARY_NAME_9 = toolchaingen9
@@ -123,11 +123,12 @@ ifeq ($(SOURCE_MAKEFILE9),default)
 	cp	-r	$(TARGET_LIBRARY_MAKEFILES_SRC9_NOFPIC)	$(CURDIR)/$(DIR_ARM9)
 endif
 	$(MAKE)	-R	-C	$(DIR_ARM9)/
-	$(MAKE)	-R	-C	$(DECOMPRESSOR_BOOTCODE_9)/
+	-cp	-r	$(TARGET_LIBRARY_PATH)$(TARGET_LIBRARY_MAKEFILES_SRC)/templateCode/	$(CURDIR)/common/
+	$(MAKE)	-R	-C	$(CURDIR)/common/templateCode/source/$(DECOMPRESSOR_BOOTCODE_9)/
 	
 $(EXECUTABLE_FNAME)	:	compile
 	-@echo 'ndstool begin'
-	$(NDSTOOL)	-v	-c $@	-7  $(CURDIR)/arm7/$(BINSTRIP_RULE_7)	-e7  0x03800000	-9 $(CURDIR)/$(DECOMPRESSOR_BOOTCODE_9)/$(BINSTRIP_RULE_COMPRESSED_9) -e9  0x02000000	-b	icon.bmp "ToolchainGenericDS SDK;$(TGDSPROJECTNAME) NDS Binary; "
+	$(NDSTOOL)	-v	-c $@	-7  $(CURDIR)/arm7/$(BINSTRIP_RULE_7)	-e7  0x03800000	-9 $(CURDIR)/common/templateCode/source/$(DECOMPRESSOR_BOOTCODE_9)/$(BINSTRIP_RULE_COMPRESSED_9) -e9  0x02000000	-b	icon.bmp "ToolchainGenericDS SDK;$(TGDSPROJECTNAME) NDS Binary; "
 	-@echo 'ndstool end: built: $@'
 	
 #---------------------------------------------------------------------------------
@@ -143,7 +144,6 @@ endif
 #--------------------------------------------------------------------
 	$(MAKE) clean	-C	$(PosIndCodeDIR_FILENAME)/$(DIR_ARM9)/
 	$(MAKE)	clean	-C	$(DIR_ARM9)/
-	$(MAKE)	clean	-C	$(DECOMPRESSOR_BOOTCODE_9)/
 ifeq ($(SOURCE_MAKEFILE9),default)
 	-@rm -rf $(CURDIR)/$(DIR_ARM9)/Makefile
 endif

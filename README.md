@@ -20,5 +20,7 @@ The ToolchainGenericDS homebrew template. Use it for writing NDS homebrew from s
 Button (Select): ToolchainGenericDS-template menu
 Button (Start): Start GDB Debugger
 
+Notes:
+Source code is at arm7/ arm9/ folders, the rest is auto generated through make / make clean rules.
 
 Coto
