@@ -107,7 +107,8 @@ int main(int argc, char argv[argvItems][MAX_TGDSFILENAME_LENGTH]) {
 			while( ShowBrowser((char *)startPath, (char *)&curChosenBrowseFile[0]) == true ){	//as long you keep using directories ShowBrowser will be true
 				
 			}
-			initSoundStream(curChosenBrowseFile);
+			int ret = initSoundStream(curChosenBrowseFile);
+			
 			while(keysPressed() & KEY_UP){
 				scanKeys();
 			}
@@ -116,8 +117,9 @@ int main(int argc, char argv[argvItems][MAX_TGDSFILENAME_LENGTH]) {
 		
 		if (keysPressed() & KEY_B){
 			scanKeys();
-			struct sIPCSharedTGDS * TGDSIPC = getsIPCSharedTGDS();
-			stopSound(TGDSIPC->sndPlayerCtx.sourceFmt); //ARM9
+			struct sIPCSharedTGDS * TGDSIPC = TGDSIPCStartAddress;
+			//Audio stop here....
+			closeSound();
 			while(keysPressed() & KEY_B){
 				scanKeys();
 			}

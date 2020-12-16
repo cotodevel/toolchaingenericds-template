@@ -21,9 +21,8 @@ USA
 //TGDS required version: IPC Version: 1.3
 
 //IPC FIFO Description: 
-//		getsIPCSharedTGDS() 		= 	Access to TGDS internal IPC FIFO structure. 		(ipcfifoTGDS.h)
-//		getsIPCSharedTGDSSpecific()	=	Access to TGDS Project (User) IPC FIFO structure	(ipcfifoTGDSUser.h)
-
+//		struct sIPCSharedTGDS * TGDSIPC = TGDSIPCStartAddress; 														// Access to TGDS internal IPC FIFO structure. 		(ipcfifoTGDS.h)
+//		struct sIPCSharedTGDSSpecific * TGDSUSERIPC = (struct sIPCSharedTGDSSpecific *)TGDSIPCUserStartAddress;		// Access to TGDS Project (User) IPC FIFO structure	(ipcfifoTGDSUser.h)
 
 //inherits what is defined in: ipcfifoTGDS.h
 #ifndef __ipcfifoTGDSUser_h__
@@ -63,9 +62,6 @@ extern void HandleFifoEmptyWeakRef(uint32 cmd1,uint32 cmd2);
 
 extern struct sIPCSharedTGDSSpecific* getsIPCSharedTGDSSpecific();
 
-extern void setupSoundUser(u32 srcFrmtInst);
-extern void stopSoundUser(u32 srcFrmt);
-extern void updateSoundContextStreamPlaybackUser(u32 srcFrmt);
 #ifdef __cplusplus
 }
 #endif
