@@ -25,6 +25,7 @@ USA
 #include "dsregs.h"
 #include "fatfslayerTGDS.h"
 #include "utilsTGDS.h"
+#include "utilsTGDS.h"
 
 #endif
 
@@ -34,6 +35,14 @@ extern "C" {
 #endif
 
 extern int main(int argc, char argv[argvItems][MAX_TGDSFILENAME_LENGTH]);
+//TGDS Dir API: Directory Iterator(s)
+extern struct FileClassList * menuIteratorfileClassListCtx;			//Menu Directory Iterator
+extern char curChosenBrowseFile[256+1];
+extern char globalPath[MAX_TGDSFILENAME_LENGTH+1];
+extern int internalCodecType;//Internal because WAV raw decompressed buffers are used if Uncompressed WAV or ADPCM
+
+extern int physFh1;	//File Handle 1
+extern int physFh2;	//File Handle 2
 
 #ifdef __cplusplus
 }
