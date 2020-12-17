@@ -17,8 +17,12 @@ After compiling, run the example in NDS.
 Project Specific description:
 The ToolchainGenericDS homebrew template. Use it for writing NDS homebrew from scratch and/or porting stuff from other platforms/devkits.
 
-Button (Select): ToolchainGenericDS-template menu
-Button (Start): Start GDB Debugger
 
+Sound file:
+http://soundbible.com/2217-Heavy-Rain-Wind.html
+License: 
+Attribution 3.0
+The sound file was taken from such site. I do not claim it as mine, but rather distribute it in a compressed format (IMA-ADPCM) compatible with this homebrew.
+Press Right D-PAD button to listen to it.
 
 Coto

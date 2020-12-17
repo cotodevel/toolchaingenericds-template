@@ -50,6 +50,13 @@ static bool pendingPlay = false;
 int physFh1 = -1;	//File Handle 1
 int physFh2 = -1;	//File Handle 2
 
+static inline void stopStream(){
+	//stop adpcm / wav playback
+	struct fd * fd1 = getStructFD(physFh1);
+	struct fd * fd2 = getStructFD(physFh2); 
+	bool ret = stopSoundStream(fd1, fd2, &internalCodecType);
+}
+
 static inline void menuShow(){
 	clrscr();
 	printf("     ");
@@ -60,6 +67,7 @@ static inline void menuShow(){
 	printf("(Start): FileBrowser : (A) Play WAV/IMA-ADPCM (Intel) strm ");
 	printf("(D-PAD:UP/DOWN): Volume + / - ");
 	printf("(D-PAD:LEFT): GDB Debugging. >%d", TGDSPrintfColor_Green);
+	printf("(D-PAD:RIGHT): Demo Sound. >%d", TGDSPrintfColor_Yellow);
 	printf("(B): Stop WAV/IMA-ADPCM file. ");
 	printf("Current Volume: %d", (int)getVolume());
 	if(internalCodecType == SRC_WAVADPCM){
@@ -80,7 +88,7 @@ static bool ShowBrowserC(char * Path, char * outBuf, bool * pendingPlay, int * c
 	scanKeys();
 	while((keysPressed() & KEY_START) || (keysPressed() & KEY_A) || (keysPressed() & KEY_B)){
 		scanKeys();
-		IRQWait(IRQ_VBLANK);
+		IRQWait(IRQ_HBLANK);
 	}
 	
 	*pendingPlay = false;
@@ -171,7 +179,7 @@ static bool ShowBrowserC(char * Path, char * outBuf, bool * pendingPlay, int * c
 			while(pressed&KEY_DOWN){
 				scanKeys();
 				pressed = keysPressed();
-				IRQWait(IRQ_VBLANK);
+				IRQWait(IRQ_HBLANK);
 			}
 		}
 		
@@ -190,7 +198,7 @@ static bool ShowBrowserC(char * Path, char * outBuf, bool * pendingPlay, int * c
 			while(pressed&KEY_DOWN){
 				scanKeys();
 				pressed = keysPressed();
-				IRQWait(IRQ_VBLANK);
+				IRQWait(IRQ_HBLANK);
 			}
 		}
 		
@@ -209,7 +217,7 @@ static bool ShowBrowserC(char * Path, char * outBuf, bool * pendingPlay, int * c
 			while(pressed&KEY_LEFT){
 				scanKeys();
 				pressed = keysPressed();
-				IRQWait(IRQ_VBLANK);
+				IRQWait(IRQ_HBLANK);
 			}
 		}
 		
@@ -228,7 +236,7 @@ static bool ShowBrowserC(char * Path, char * outBuf, bool * pendingPlay, int * c
 			while(pressed&KEY_RIGHT){
 				scanKeys();
 				pressed = keysPressed();
-				IRQWait(IRQ_VBLANK);
+				IRQWait(IRQ_HBLANK);
 			}
 		}
 		
@@ -237,7 +245,7 @@ static bool ShowBrowserC(char * Path, char * outBuf, bool * pendingPlay, int * c
 			while(pressed&KEY_UP){
 				scanKeys();
 				pressed = keysPressed();
-				IRQWait(IRQ_VBLANK);
+				IRQWait(IRQ_HBLANK);
 			}
 		}
 		
@@ -255,7 +263,7 @@ static bool ShowBrowserC(char * Path, char * outBuf, bool * pendingPlay, int * c
 			while(pressed&KEY_UP){
 				scanKeys();
 				pressed = keysPressed();
-				IRQWait(IRQ_VBLANK);
+				IRQWait(IRQ_HBLANK);
 			}
 		}
 		
@@ -370,6 +378,9 @@ int main(int argc, char argv[argvItems][MAX_TGDSFILENAME_LENGTH]) {
 	while(1) {
 		if(pendingPlay == true){
 			internalCodecType = playSoundStream(curChosenBrowseFile);
+			if(internalCodecType == SRC_NONE){
+				stopStream();
+			}
 			pendingPlay = false;
 			menuShow();
 		}
@@ -427,6 +438,7 @@ int main(int argc, char argv[argvItems][MAX_TGDSFILENAME_LENGTH]) {
 			scanKeys();
 			while(keysPressed() & KEY_L){
 				scanKeys();
+				IRQWait(IRQ_HBLANK);
 			}
 			menuShow();
 		}
@@ -451,6 +463,7 @@ int main(int argc, char argv[argvItems][MAX_TGDSFILENAME_LENGTH]) {
 			scanKeys();
 			while(keysPressed() & KEY_R){
 				scanKeys();
+				IRQWait(IRQ_HBLANK);
 			}
 			menuShow();
 		}
@@ -463,7 +476,7 @@ int main(int argc, char argv[argvItems][MAX_TGDSFILENAME_LENGTH]) {
 			scanKeys();
 			while(keysPressed() & KEY_UP){
 				scanKeys();
-				IRQWait(IRQ_VBLANK);
+				IRQWait(IRQ_HBLANK);
 			}
 		}
 		
@@ -475,18 +488,13 @@ int main(int argc, char argv[argvItems][MAX_TGDSFILENAME_LENGTH]) {
 			scanKeys();
 			while(keysPressed() & KEY_DOWN){
 				scanKeys();
-				IRQWait(IRQ_VBLANK);
+				IRQWait(IRQ_HBLANK);
 			}
 		}
 		
 		if (keysPressed() & KEY_B){
 			scanKeys();
-			
-			//stop adpcm / wav playback
-			struct fd * fd1 = getStructFD(physFh1);
-			struct fd * fd2 = getStructFD(physFh2); 
-			bool ret = stopSoundStream(fd1, fd2, &internalCodecType);
-			
+			stopStream();
 			menuShow();
 			while(keysPressed() & KEY_B){
 				scanKeys();
@@ -494,7 +502,6 @@ int main(int argc, char argv[argvItems][MAX_TGDSFILENAME_LENGTH]) {
 		}
 		
 		if (keysPressed() & KEY_LEFT){
-			
 			if(GDBEnabled == false){
 				GDBEnabled = true;
 			}
@@ -503,6 +510,16 @@ int main(int argc, char argv[argvItems][MAX_TGDSFILENAME_LENGTH]) {
 			}
 			
 			while(keysPressed() & KEY_LEFT){
+				scanKeys();
+			}
+		}
+		
+		if (keysPressed() & KEY_RIGHT){
+			strcpy(curChosenBrowseFile, (const char *)"0:/rain.ima");
+			pendingPlay = true;
+			
+			scanKeys();
+			while(keysPressed() & KEY_RIGHT){
 				scanKeys();
 			}
 		}
@@ -546,7 +563,7 @@ int main(int argc, char argv[argvItems][MAX_TGDSFILENAME_LENGTH]) {
 					if (keys&KEY_B){
 						break;
 					}
-					IRQVBlankWait();
+					IRQWait(IRQ_HBLANK);
 				}
 				
 				if (keys&KEY_B){
@@ -570,7 +587,7 @@ int main(int argc, char argv[argvItems][MAX_TGDSFILENAME_LENGTH]) {
 		//GDB Debug End
 		
 		handleARM9SVC();	/* Do not remove, handles TGDS services */
-		IRQVBlankWait();
+		IRQWait(IRQ_HBLANK);
 	}
 
 	return 0;
