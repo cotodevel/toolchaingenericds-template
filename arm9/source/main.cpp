@@ -42,19 +42,19 @@ USA
 struct FileClassList * menuIteratorfileClassListCtx = NULL;
 char curChosenBrowseFile[256+1];
 char globalPath[MAX_TGDSFILENAME_LENGTH+1];
-int internalCodecType = SRC_NONE;//Internal because WAV raw decompressed buffers are used if Uncompressed WAV or ADPCM
-
 static int curFileIndex = 0;
 static bool pendingPlay = false;
 
-int physFh1 = -1;	//File Handle 1
-int physFh2 = -1;	//File Handle 2
+int internalCodecType = SRC_NONE;//Internal because WAV raw decompressed buffers are used if Uncompressed WAV or ADPCM
+static struct fd * _FileHandleVideo = NULL; 
+static struct fd * _FileHandleAudio = NULL;
 
-static inline void stopStream(){
-	//stop adpcm / wav playback
-	struct fd * fd1 = getStructFD(physFh1);
-	struct fd * fd2 = getStructFD(physFh2); 
-	bool ret = stopSoundStream(fd1, fd2, &internalCodecType);
+bool stopSoundStreamUser(){
+	return stopSoundStream(_FileHandleVideo, _FileHandleAudio, &internalCodecType);
+}
+
+void closeSoundUser(){
+	//Stubbed. Gets called when closing an audiostream of a custom audio decoder
 }
 
 static inline void menuShow(){
@@ -377,9 +377,9 @@ int main(int argc, char argv[argvItems][MAX_TGDSFILENAME_LENGTH]) {
 	static bool GDBEnabled = false;
 	while(1) {
 		if(pendingPlay == true){
-			internalCodecType = playSoundStream(curChosenBrowseFile);
+			internalCodecType = playSoundStream(curChosenBrowseFile, _FileHandleVideo, _FileHandleAudio);
 			if(internalCodecType == SRC_NONE){
-				stopStream();
+				stopSoundStreamUser();
 			}
 			pendingPlay = false;
 			menuShow();
@@ -494,7 +494,7 @@ int main(int argc, char argv[argvItems][MAX_TGDSFILENAME_LENGTH]) {
 		
 		if (keysPressed() & KEY_B){
 			scanKeys();
-			stopStream();
+			stopSoundStreamUser();
 			menuShow();
 			while(keysPressed() & KEY_B){
 				scanKeys();

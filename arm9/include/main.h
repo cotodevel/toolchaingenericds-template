@@ -41,9 +41,6 @@ extern char curChosenBrowseFile[256+1];
 extern char globalPath[MAX_TGDSFILENAME_LENGTH+1];
 extern int internalCodecType;//Internal because WAV raw decompressed buffers are used if Uncompressed WAV or ADPCM
 
-extern int physFh1;	//File Handle 1
-extern int physFh2;	//File Handle 2
-
 #ifdef __cplusplus
 }
 #endif
