@@ -79,7 +79,6 @@ static inline void menuShow(){
 	else{
 		printf("Player Inactive");
 	}
-	printf("(B): stop .WAV playback ");
 	printf("Available heap memory: %d >%d", getMaxRam(), TGDSPrintfColor_Cyan);
 	printarm7DebugBuffer();
 }
@@ -469,9 +468,9 @@ int main(int argc, char argv[argvItems][MAX_TGDSFILENAME_LENGTH]) {
 		}
 		
 		if (keysPressed() & KEY_UP){
-			struct touchScr touchScrInst;
-			touchScrRead(&touchScrInst);
-			volumeUp(touchScrInst.touchXpx, touchScrInst.touchYpx);
+			struct XYTscPos touchPos;
+			XYReadScrPos(&touchPos);
+			volumeUp(touchPos.touchXpx, touchPos.touchYpx);
 			menuShow();
 			scanKeys();
 			while(keysPressed() & KEY_UP){
@@ -481,9 +480,9 @@ int main(int argc, char argv[argvItems][MAX_TGDSFILENAME_LENGTH]) {
 		}
 		
 		if (keysPressed() & KEY_DOWN){
-			struct touchScr touchScrInst;
-			touchScrRead(&touchScrInst);
-			volumeDown(touchScrInst.touchXpx, touchScrInst.touchYpx);
+			struct XYTscPos touchPos;
+			XYReadScrPos(&touchPos);
+			volumeDown(touchPos.touchXpx, touchPos.touchYpx);
 			menuShow();
 			scanKeys();
 			while(keysPressed() & KEY_DOWN){
