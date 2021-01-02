@@ -386,6 +386,14 @@ int main(int argc, char argv[argvItems][MAX_TGDSFILENAME_LENGTH]) {
 		
 		scanKeys();
 		
+		if (keysPressed() & KEY_X){
+			printf("X KEY PRESSED!");
+			
+			while(keysPressed() & KEY_X){
+				scanKeys();
+			}
+		}
+		
 		if (keysPressed() & KEY_TOUCH){
 			u8 channel = SOUNDSTREAM_FREE_CHANNEL;
 			startSoundSample(11025, (u32*)&click_raw[0], click_raw_size, channel, 40, 63, 1);	//PCM16 sample
