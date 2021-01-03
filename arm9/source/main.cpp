@@ -85,7 +85,7 @@ static inline void menuShow(){
 
 static bool ShowBrowserC(char * Path, char * outBuf, bool * pendingPlay, int * curFileIdx){	//MUST be same as the template one at "fileBrowse.h" but added some custom code
 	scanKeys();
-	while((keysPressed() & KEY_START) || (keysPressed() & KEY_A) || (keysPressed() & KEY_B)){
+	while((keysDown() & KEY_START) || (keysDown() & KEY_A) || (keysDown() & KEY_B)){
 		scanKeys();
 		IRQWait(IRQ_HBLANK);
 	}
@@ -172,12 +172,12 @@ static bool ShowBrowserC(char * Path, char * outBuf, bool * pendingPlay, int * c
 		}
 		
 		scanKeys();
-		pressed = keysPressed();
+		pressed = keysDown();
 		if (pressed&KEY_DOWN && (j < (itemsToLoad - 1) ) ){
 			j++;
 			while(pressed&KEY_DOWN){
 				scanKeys();
-				pressed = keysPressed();
+				pressed = keysDown();
 				IRQWait(IRQ_HBLANK);
 			}
 		}
@@ -193,10 +193,10 @@ static bool ShowBrowserC(char * Path, char * outBuf, bool * pendingPlay, int * c
 			j = 1;
 			
 			scanKeys();
-			pressed = keysPressed();
+			pressed = keysDown();
 			while(pressed&KEY_DOWN){
 				scanKeys();
-				pressed = keysPressed();
+				pressed = keysDown();
 				IRQWait(IRQ_HBLANK);
 			}
 		}
@@ -212,10 +212,10 @@ static bool ShowBrowserC(char * Path, char * outBuf, bool * pendingPlay, int * c
 			j = 1;
 			
 			scanKeys();
-			pressed = keysPressed();
+			pressed = keysDown();
 			while(pressed&KEY_LEFT){
 				scanKeys();
-				pressed = keysPressed();
+				pressed = keysDown();
 				IRQWait(IRQ_HBLANK);
 			}
 		}
@@ -231,10 +231,10 @@ static bool ShowBrowserC(char * Path, char * outBuf, bool * pendingPlay, int * c
 			j = 1;
 			
 			scanKeys();
-			pressed = keysPressed();
+			pressed = keysDown();
 			while(pressed&KEY_RIGHT){
 				scanKeys();
-				pressed = keysPressed();
+				pressed = keysDown();
 				IRQWait(IRQ_HBLANK);
 			}
 		}
@@ -243,7 +243,7 @@ static bool ShowBrowserC(char * Path, char * outBuf, bool * pendingPlay, int * c
 			j--;
 			while(pressed&KEY_UP){
 				scanKeys();
-				pressed = keysPressed();
+				pressed = keysDown();
 				IRQWait(IRQ_HBLANK);
 			}
 		}
@@ -258,10 +258,10 @@ static bool ShowBrowserC(char * Path, char * outBuf, bool * pendingPlay, int * c
 			j = 1;
 			
 			scanKeys();
-			pressed = keysPressed();
+			pressed = keysDown();
 			while(pressed&KEY_UP){
 				scanKeys();
-				pressed = keysPressed();
+				pressed = keysDown();
 				IRQWait(IRQ_HBLANK);
 			}
 		}
@@ -386,30 +386,30 @@ int main(int argc, char argv[argvItems][MAX_TGDSFILENAME_LENGTH]) {
 		
 		scanKeys();
 		
-		if (keysPressed() & KEY_X){
+		if (keysDown() & KEY_X){
 			printf("X KEY PRESSED!");
 			
-			while(keysPressed() & KEY_X){
+			while(keysDown() & KEY_X){
 				scanKeys();
 			}
 		}
 		
-		if (keysPressed() & KEY_TOUCH){
+		if (keysDown() & KEY_TOUCH){
 			u8 channel = SOUNDSTREAM_FREE_CHANNEL;
 			startSoundSample(11025, (u32*)&click_raw[0], click_raw_size, channel, 40, 63, 1);	//PCM16 sample
-			while(keysPressed() & KEY_TOUCH){
+			while(keysDown() & KEY_TOUCH){
 				scanKeys();
 			}
 		}
 		
-		if (keysPressed() & KEY_SELECT){
+		if (keysDown() & KEY_SELECT){
 			menuShow();
-			while(keysPressed() & KEY_SELECT){
+			while(keysDown() & KEY_SELECT){
 				scanKeys();
 			}
 		}
 		
-		if (keysPressed() & KEY_START){
+		if (keysDown() & KEY_START){
 			while( ShowBrowserC((char *)globalPath, (char *)&curChosenBrowseFile[0], &pendingPlay, &curFileIndex) == true ){	//as long you keep using directories ShowBrowser will be true
 				
 			}
@@ -420,13 +420,13 @@ int main(int argc, char argv[argvItems][MAX_TGDSFILENAME_LENGTH]) {
 			}
 			
 			scanKeys();
-			while(keysPressed() & KEY_START){
+			while(keysDown() & KEY_START){
 				scanKeys();
 			}
 			menuShow();
 		}
 		
-		if (keysPressed() & KEY_L){
+		if (keysDown() & KEY_L){
 			struct sIPCSharedTGDS * TGDSIPC = TGDSIPCStartAddress;
 			if(getCurrentDirectoryCount(menuIteratorfileClassListCtx) > 0){
 				if(curFileIndex > 1){	//+1 stub FileClass
@@ -443,14 +443,14 @@ int main(int argc, char argv[argvItems][MAX_TGDSFILENAME_LENGTH]) {
 			}
 			
 			scanKeys();
-			while(keysPressed() & KEY_L){
+			while(keysDown() & KEY_L){
 				scanKeys();
 				IRQWait(IRQ_HBLANK);
 			}
 			menuShow();
 		}
 		
-		if (keysPressed() & KEY_R){	
+		if (keysDown() & KEY_R){	
 			//Play next song from current folder
 			int lstSize = getCurrentDirectoryCount(menuIteratorfileClassListCtx);
 			if(lstSize > 0){	
@@ -468,47 +468,47 @@ int main(int argc, char argv[argvItems][MAX_TGDSFILENAME_LENGTH]) {
 			}
 			
 			scanKeys();
-			while(keysPressed() & KEY_R){
+			while(keysDown() & KEY_R){
 				scanKeys();
 				IRQWait(IRQ_HBLANK);
 			}
 			menuShow();
 		}
 		
-		if (keysPressed() & KEY_UP){
+		if (keysDown() & KEY_UP){
 			struct XYTscPos touchPos;
 			XYReadScrPos(&touchPos);
 			volumeUp(touchPos.touchXpx, touchPos.touchYpx);
 			menuShow();
 			scanKeys();
-			while(keysPressed() & KEY_UP){
+			while(keysDown() & KEY_UP){
 				scanKeys();
 				IRQWait(IRQ_HBLANK);
 			}
 		}
 		
-		if (keysPressed() & KEY_DOWN){
+		if (keysDown() & KEY_DOWN){
 			struct XYTscPos touchPos;
 			XYReadScrPos(&touchPos);
 			volumeDown(touchPos.touchXpx, touchPos.touchYpx);
 			menuShow();
 			scanKeys();
-			while(keysPressed() & KEY_DOWN){
+			while(keysDown() & KEY_DOWN){
 				scanKeys();
 				IRQWait(IRQ_HBLANK);
 			}
 		}
 		
-		if (keysPressed() & KEY_B){
+		if (keysDown() & KEY_B){
 			scanKeys();
 			stopSoundStreamUser();
 			menuShow();
-			while(keysPressed() & KEY_B){
+			while(keysDown() & KEY_B){
 				scanKeys();
 			}
 		}
 		
-		if (keysPressed() & KEY_LEFT){
+		if (keysDown() & KEY_LEFT){
 			if(GDBEnabled == false){
 				GDBEnabled = true;
 			}
@@ -516,17 +516,17 @@ int main(int argc, char argv[argvItems][MAX_TGDSFILENAME_LENGTH]) {
 				GDBEnabled = false;
 			}
 			
-			while(keysPressed() & KEY_LEFT){
+			while(keysDown() & KEY_LEFT){
 				scanKeys();
 			}
 		}
 		
-		if (keysPressed() & KEY_RIGHT){
+		if (keysDown() & KEY_RIGHT){
 			strcpy(curChosenBrowseFile, (const char *)"0:/rain.ima");
 			pendingPlay = true;
 			
 			scanKeys();
-			while(keysPressed() & KEY_RIGHT){
+			while(keysDown() & KEY_RIGHT){
 				scanKeys();
 			}
 		}
@@ -563,7 +563,7 @@ int main(int argc, char argv[argvItems][MAX_TGDSFILENAME_LENGTH]) {
 				int keys = 0;
 				while(1){
 					scanKeys();
-					keys = keysPressed();
+					keys = keysDown();
 					if (keys&KEY_A){
 						break;
 					}
