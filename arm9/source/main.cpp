@@ -477,7 +477,7 @@ int main(int argc, char argv[argvItems][MAX_TGDSFILENAME_LENGTH]) {
 		
 		if (keysDown() & KEY_UP){
 			struct XYTscPos touchPos;
-			XYReadScrPos(&touchPos);
+			XYReadScrPosUser(&touchPos);
 			volumeUp(touchPos.touchXpx, touchPos.touchYpx);
 			menuShow();
 			scanKeys();
@@ -489,7 +489,7 @@ int main(int argc, char argv[argvItems][MAX_TGDSFILENAME_LENGTH]) {
 		
 		if (keysDown() & KEY_DOWN){
 			struct XYTscPos touchPos;
-			XYReadScrPos(&touchPos);
+			XYReadScrPosUser(&touchPos);
 			volumeDown(touchPos.touchXpx, touchPos.touchYpx);
 			menuShow();
 			scanKeys();
@@ -530,6 +530,12 @@ int main(int argc, char argv[argvItems][MAX_TGDSFILENAME_LENGTH]) {
 				scanKeys();
 			}
 		}
+		
+		
+		// TSC Test.
+		struct XYTscPos touch;
+		XYReadScrPosUser(&touch);
+		printfCoords(0, 15, " x:%d y:%d", touch.touchXpx, touch.touchYpx);	//clean old
 		
 		//GDB Debug Start
 		
