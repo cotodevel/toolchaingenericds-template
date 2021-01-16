@@ -329,7 +329,7 @@ static bool ShowBrowserC(char * Path, char * outBuf, bool * pendingPlay, int * c
 }
 
 
-int main(int argc, char argv[argvItems][MAX_TGDSFILENAME_LENGTH]) {
+int main(int argc, char **argv) {
 	
 	/*			TGDS 1.6 Standard ARM9 Init code start	*/
 	bool isTGDSCustomConsole = false;	//set default console or custom console: default console
