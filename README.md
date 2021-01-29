@@ -19,5 +19,8 @@ After compiling, run the example in NDS.
 Project Specific description:
 A Woopsi UI + TGDS SDK template for UI control handling on the NintendoDS. 
 Draw the pop up windows across the screen or scroll other windows to test touchscreen. 
+Also plays WAV/AD-PCM (Intel) files from the directory!
+
+Note: UI Controls experimental.
 
 Coto
