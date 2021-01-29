@@ -26,6 +26,7 @@ USA
 #include "keypadTGDS.h"
 
 //User Handler Definitions
+#include "woopsifuncs.h"
 
 #ifdef ARM9
 __attribute__((section(".itcm")))
@@ -34,7 +35,6 @@ void IpcSynchandlerUser(uint8 ipcByte){
 	switch(ipcByte){
 		default:{
 			//ipcByte should be the byte you sent from external ARM Core through sendByteIPC(ipcByte);
-			GUI_printf("ARM7:IPC_SYNC_IRQ_REQUEST");
 		}
 		break;
 	}
@@ -79,7 +79,7 @@ void HblankUser(){
 __attribute__((section(".itcm")))
 #endif
 void VblankUser(){
-	
+	woopsiVblFunc();
 }
 
 #ifdef ARM9

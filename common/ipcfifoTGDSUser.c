@@ -84,7 +84,6 @@ void HandleFifoEmptyWeakRef(uint32 cmd1,uint32 cmd2){
 
 //project specific stuff
 
-
 #ifdef ARM9
 
 void updateStreamCustomDecoder(u32 srcFrmt){

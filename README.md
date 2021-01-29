@@ -1,6 +1,6 @@
 ![ToolchainGenericDS](img/TGDS-Logo.png)
 
-This is the ToolchainGenericDS template project:
+This is the ToolchainGenericDS Woopsi template project:
 
 1.	Compile Toolchain:
 To compile this project you will need to follow the steps at https://bitbucket.org/Coto88/toolchaingenericds :
@@ -15,14 +15,7 @@ make <enter>
 After compiling, run the example in NDS. 
 
 Project Specific description:
-The ToolchainGenericDS homebrew template. Use it for writing NDS homebrew from scratch and/or porting stuff from other platforms/devkits.
-
-
-Sound file:
-http://soundbible.com/2217-Heavy-Rain-Wind.html
-License: 
-Attribution 3.0
-The sound file was taken from such site. I do not claim it as mine, but rather distribute it in a compressed format (IMA-ADPCM) compatible with this homebrew.
-Press Right D-PAD button to listen to it.
+A Woopsi UI + TGDS SDK template for UI control handling on the NintendoDS. 
+Draw the pop up windows across the screen or scroll other windows to test touchscreen. 
 
 Coto
