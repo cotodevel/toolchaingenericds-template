@@ -8,6 +8,7 @@
 #include "filerequester.h"
 #include "textbox.h"
 #include "soundTGDS.h"
+#include "button.h"
 
 #include <string>
 using namespace std;
@@ -21,11 +22,19 @@ public:
 	void startup();
 	void shutdown();
 	void handleValueChangeEvent(const GadgetEventArgs& e);	//Handles UI events if they change
+	void handleClickEvent(const GadgetEventArgs& e);	//Handles UI events when they take click action
 	void handleLidClosed();
 	void handleLidOpen();
 	void ApplicationMainLoop();
-	FileRequester* fileReq;
-	TextBox* _textbox;
+	FileRequester* _fileReq;
+	int currentFileRequesterIndex;
+	
+	Button* _Index;
+	Button* _lastFile;
+	Button* _nextFile;
+	Button* _play;
+	Button* _stop;
+	
 private:
 	Alert* _alert;
 };
@@ -38,6 +47,8 @@ extern "C" {
 #endif
 
 extern WoopsiTemplate * WoopsiTemplateProc;
+extern u32 pendPlay;
+extern char currentFileChosen[256+1];
 
 #ifdef __cplusplus
 }

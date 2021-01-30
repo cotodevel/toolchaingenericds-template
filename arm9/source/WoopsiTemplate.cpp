@@ -17,6 +17,7 @@ __attribute__((section(".itcm")))
 WoopsiTemplate * WoopsiTemplateProc = NULL;
 
 void WoopsiTemplate::startup() {
+	
 	Rect rect;
 
 	/** SuperBitmap preparation **/
@@ -41,15 +42,32 @@ void WoopsiTemplate::startup() {
 	// Controls
 	controlWindow->getClientRect(rect);
 
-	Button* homeButton = new Button(rect.x, rect.y, 41, 16, "Home");
-	homeButton->disable();
-
-	controlWindow->addGadget(homeButton);
-	controlWindow->addGadget(new Button(rect.x + 41, rect.y, 49, 16, "Index"));
-	controlWindow->addGadget(new Button(rect.x + 90, rect.y, 17, 16, "<"));
-	controlWindow->addGadget(new Button(rect.x + 107, rect.y, 17, 16, ">"));
-	controlWindow->addGadget(new Button(rect.x + 124, rect.y, 40, 16, "Help"));
-
+	_Index = new Button(rect.x, rect.y, 41, 16, "Index");	//_Index->disable();
+	_Index->setRefcon(2);
+	controlWindow->addGadget(_Index);
+	_Index->addGadgetEventHandler(this);
+	
+	_lastFile = new Button(rect.x + 41, rect.y, 17, 16, "<");
+	_lastFile->setRefcon(3);
+	controlWindow->addGadget(_lastFile);
+	_lastFile->addGadgetEventHandler(this);
+	
+	_nextFile = new Button(rect.x + 41 + 17, rect.y, 17, 16, ">");
+	_nextFile->setRefcon(4);
+	controlWindow->addGadget(_nextFile);
+	_nextFile->addGadgetEventHandler(this);
+	
+	_play = new Button(rect.x + 41 + 17 + 17, rect.y, 40, 16, "Play");
+	_play->setRefcon(5);
+	controlWindow->addGadget(_play);
+	_play->addGadgetEventHandler(this);
+	
+	_stop = new Button(rect.x + 41 + 17 + 17 + 40, rect.y, 40, 16, "Stop");
+	_stop->setRefcon(6);
+	controlWindow->addGadget(_stop);
+	_stop->addGadgetEventHandler(this);
+	
+	
 	// Add File listing screen
 	AmigaScreen* fileScreen = new AmigaScreen("File List", Gadget::GADGET_DRAGGABLE, AmigaScreen::AMIGA_SCREEN_SHOW_DEPTH | AmigaScreen::AMIGA_SCREEN_SHOW_FLIP);
 	woopsiApplication->addGadget(fileScreen);
@@ -59,11 +77,11 @@ void WoopsiTemplate::startup() {
 	fileScreen->insertGadget(new Gradient(0, SCREEN_TITLE_HEIGHT, 256, 192 - SCREEN_TITLE_HEIGHT, woopsiRGB(0, 31, 0), woopsiRGB(0, 0, 31)));
 	
 	// Create FileRequester
-	fileReq = new FileRequester(10, 10, 150, 150, "Files", "/", GADGET_DRAGGABLE | GADGET_DOUBLE_CLICKABLE);
-	fileReq->setRefcon(1);
-	//Setting event handlers
-	fileReq->addGadgetEventHandler(this);
-	fileScreen->addGadget(fileReq);
+	_fileReq = new FileRequester(10, 10, 150, 150, "Files", "/", GADGET_DRAGGABLE | GADGET_DOUBLE_CLICKABLE);
+	_fileReq->setRefcon(1);
+	fileScreen->addGadget(_fileReq);
+	_fileReq->addGadgetEventHandler(this);
+	currentFileRequesterIndex = 0;
 	
 	enableDrawing();	// Ensure Woopsi can now draw itself
 	redraw();			// Draw initial state
@@ -80,14 +98,11 @@ void WoopsiTemplate::handleValueChangeEvent(const GadgetEventArgs& e) {
 	
 		// Is the gadget the file requester?
 		if (e.getSource()->getRefcon() == 1) {
-			
 			//Play WAV/ADPCM if selected from the FileRequester
 			WoopsiString strObj = ((FileRequester*)e.getSource())->getSelectedOption()->getText();
-			char fName[256+1];
-			memset(fName, 0, sizeof(fName));
-			strObj.copyToCharArray((char*)&fName[0]);
-			internalCodecType = playSoundStream(fName, _FileHandleVideo, _FileHandleAudio);
-			
+			memset(currentFileChosen, 0, sizeof(currentFileChosen));
+			strObj.copyToCharArray(currentFileChosen);
+			pendPlay = 1;
 		}
 	}
 }
@@ -116,10 +131,92 @@ void WoopsiTemplate::handleLidOpen() {
 	}
 }
 
+void WoopsiTemplate::handleClickEvent(const GadgetEventArgs& e) {
+	switch (e.getSource()->getRefcon()) {
+		//_Index Event
+		case 2:{
+			//Get fileRequester size, if > 0, set the first element selected
+			FileRequester * freqInst = _fileReq;
+			FileListBox* freqListBox = freqInst->getInternalListBoxObject();
+			if(freqListBox->getOptionCount() > 0){
+				freqListBox->setSelectedIndex(0);
+			}
+			currentFileRequesterIndex = 0;
+		}	
+		break;
+		
+		//_lastFile Event
+		case 3:{
+			FileRequester * freqInst = _fileReq;
+			FileListBox* freqListBox = freqInst->getInternalListBoxObject();
+			if(currentFileRequesterIndex > 0){
+				currentFileRequesterIndex--;
+			}
+			if(freqListBox->getOptionCount() > 0){
+				freqListBox->setSelectedIndex(currentFileRequesterIndex);
+			}
+		}	
+		break;
+		
+		//_nextFile Event
+		case 4:{
+			FileRequester * freqInst = _fileReq;
+			FileListBox* freqListBox = freqInst->getInternalListBoxObject();
+			if(currentFileRequesterIndex < (freqListBox->getOptionCount() - 1) ){
+				currentFileRequesterIndex++;
+				freqListBox->setSelectedIndex(currentFileRequesterIndex);
+			}
+		}	
+		break;
+		
+		//_play Event
+		case 5:{
+			//Play WAV/ADPCM if selected from the FileRequester
+			WoopsiString strObj = _fileReq->getSelectedOption()->getText();
+			memset(currentFileChosen, 0, sizeof(currentFileChosen));
+			strObj.copyToCharArray(currentFileChosen);
+			pendPlay = 1;
+		}	
+		break;
+		
+		//_stop Event
+		case 6:{
+			pendPlay = 2;
+		}	
+		break;
+	}
+}
+
+__attribute__((section(".dtcm")))
+u32 pendPlay = 0;
+
+char currentFileChosen[256+1];
+
 //Called once Woopsi events are ended: TGDS Main Loop
 __attribute__((section(".itcm")))
 void Woopsi::ApplicationMainLoop(){
 	//Earlier.. main from Woopsi SDK.
 	
 	//Handle TGDS stuff...
+	
+	
+	
+	switch(pendPlay){
+		case(1):{
+			internalCodecType = playSoundStream(currentFileChosen, _FileHandleVideo, _FileHandleAudio);
+			if(internalCodecType == SRC_NONE){
+				//stop right now
+				pendPlay = 2;
+			}
+			else{
+				pendPlay = 0;
+			}
+		}
+		break;
+		case(2):{
+			stopSoundStreamUser();
+			pendPlay = 0;
+		}
+		break;
+	}
 }
