@@ -13,6 +13,9 @@
 #include "soundTGDS.h"
 #include "main.h"
 
+__attribute__((section(".itcm")))
+WoopsiTemplate * WoopsiTemplateProc = NULL;
+
 void WoopsiTemplate::startup() {
 	Rect rect;
 
@@ -87,4 +90,36 @@ void WoopsiTemplate::handleValueChangeEvent(const GadgetEventArgs& e) {
 			
 		}
 	}
+}
+
+void WoopsiTemplate::handleLidClosed() {
+	// Lid has just been closed
+	_lidClosed = true;
+
+	// Run lid closed on all gadgets
+	s32 i = 0;
+	while (i < _gadgets.size()) {
+		_gadgets[i]->lidClose();
+		i++;
+	}
+}
+
+void WoopsiTemplate::handleLidOpen() {
+	// Lid has just been opened
+	_lidClosed = false;
+
+	// Run lid opened on all gadgets
+	s32 i = 0;
+	while (i < _gadgets.size()) {
+		_gadgets[i]->lidOpen();
+		i++;
+	}
+}
+
+//Called once Woopsi events are ended: TGDS Main Loop
+__attribute__((section(".itcm")))
+void Woopsi::ApplicationMainLoop(){
+	//Earlier.. main from Woopsi SDK.
+	
+	//Handle TGDS stuff...
 }

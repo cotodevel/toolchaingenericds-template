@@ -16,12 +16,14 @@ using namespace WoopsiUI;
 
 #define TGDSPROJECTNAME ((char*) "ToolchainGenericDS-template")
 
-
 class WoopsiTemplate : public Woopsi, public GadgetEventHandler {
 public:
 	void startup();
 	void shutdown();
 	void handleValueChangeEvent(const GadgetEventArgs& e);	//Handles UI events if they change
+	void handleLidClosed();
+	void handleLidOpen();
+	void ApplicationMainLoop();
 	FileRequester* fileReq;
 	TextBox* _textbox;
 private:
@@ -29,4 +31,14 @@ private:
 };
 #endif
 
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+extern WoopsiTemplate * WoopsiTemplateProc;
+
+#ifdef __cplusplus
+}
 #endif
