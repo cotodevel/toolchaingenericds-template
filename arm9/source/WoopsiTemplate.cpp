@@ -128,6 +128,17 @@ void WoopsiTemplate::handleValueChangeEvent(const GadgetEventArgs& e) {
 			WoopsiString strObj = ((FileRequester*)e.getSource())->getSelectedOption()->getText();
 			memset(currentFileChosen, 0, sizeof(currentFileChosen));
 			strObj.copyToCharArray(currentFileChosen);
+			
+			//Boot .NDS file! (homebrew only)
+			char tmpName[256];
+			char ext[256];
+			strcpy(tmpName, currentFileChosen);
+			separateExtension(tmpName, ext);
+			strlwr(ext);
+			if(strncmp(ext,".nds", 4) == 0){
+				TGDSMultibootRunNDSPayload(currentFileChosen);
+			}
+			
 			pendPlay = 1;
 
 			/* 

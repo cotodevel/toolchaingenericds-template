@@ -42,6 +42,11 @@ USA
 // Includes
 #include "WoopsiTemplate.h"
 
+#include "tgds_multiboot_payload.h" 
+#include "dmaTGDS.h"
+#include "nds_cp15_misc.h"
+#include "fatfslayerTGDS.h"
+
 //TGDS Soundstreaming API
 int internalCodecType = SRC_NONE; //Returns current sound stream format: WAV, ADPCM or NONE
 struct fd * _FileHandleVideo = NULL; 
@@ -78,6 +83,18 @@ static inline void menuShow(){
 	}
 	printf("Available heap memory: %d >%d", getMaxRam(), TGDSPrintfColor_Cyan);
 	printarm7DebugBuffer();
+}
+
+//NTR Bootcode:
+void TGDSMultibootRunNDSPayload(char * filename) __attribute__ ((optnone)) {
+	strcpy((char*)(0x02280000 - (MAX_TGDSFILENAME_LENGTH+1)), filename);	//Arg0:	
+	coherent_user_range_by_size((uint32)&tgds_multiboot_payload[0], (int)tgds_multiboot_payload_size);
+	dmaTransferHalfWord(0, (uint32)&tgds_multiboot_payload[0], (u32)0x02280000, (uint32)tgds_multiboot_payload_size);
+	int ret=FS_deinit();
+	REG_IME = 0;
+	typedef void (*t_bootAddr)();
+	t_bootAddr bootARM9Payload = (t_bootAddr)0x02280000;
+	bootARM9Payload();
 }
 
 int main(int argc, char **argv) {

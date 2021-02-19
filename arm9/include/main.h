@@ -43,6 +43,7 @@ extern struct fd * _FileHandleVideo;
 extern struct fd * _FileHandleAudio;
 extern bool stopSoundStreamUser();
 extern void closeSoundUser();
+extern void TGDSMultibootRunNDSPayload(char * filename);
 
 #ifdef __cplusplus
 }
