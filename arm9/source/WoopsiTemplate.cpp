@@ -138,7 +138,18 @@ void WoopsiTemplate::handleValueChangeEvent(const GadgetEventArgs& e) {
 			if(strncmp(ext,".nds", 4) == 0){
 				TGDSMultibootRunNDSPayload(currentFileChosen);
 			}
-			
+			else if(strncmp(ext,".bin", 4) == 0){
+				int argCount = 2;	
+				strcpy(&args[0][0], TGDSPROJECTNAME);	//Arg0: Parent TGDS Project name
+				strcpy(&args[1][0], currentFileChosen);	//Arg1: self TGDS-LinkedModule filename
+				
+				int i = 0;
+				for(i = 0; i < argCount; i++){
+					argvs[i] = (char*)&args[i][0];
+				}
+				
+				TGDSProjectRunLinkedModule(currentFileChosen, argCount, argvs, TGDSPROJECTNAME);
+			}
 			pendPlay = 1;
 
 			/* 

@@ -38,6 +38,7 @@ USA
 #include "utilsTGDS.h"
 #include "click_raw.h"
 #include "ima_adpcm.h"
+#include "linkerTGDS.h"
 
 // Includes
 #include "WoopsiTemplate.h"
@@ -83,7 +84,7 @@ static inline void menuShow(){
 	printarm7DebugBuffer();
 }
 
-//NTR Bootcode:
+//ToolchainGenericDS-multiboot NDS Boot:
 void TGDSMultibootRunNDSPayload(char * filename) __attribute__ ((optnone)) {
 	switch_dswnifi_mode(dswifi_idlemode);
 	strcpy((char*)(0x02280000 - (MAX_TGDSFILENAME_LENGTH+1)), filename);	//Arg0:	
@@ -106,6 +107,22 @@ void TGDSMultibootRunNDSPayload(char * filename) __attribute__ ((optnone)) {
 		t_bootAddr bootARM9Payload = (t_bootAddr)0x02280000;
 		bootARM9Payload();
 	}
+}
+
+//ToolchainGenericDS-LinkedModule User implementation: WoopsiTGDS
+char args[8][MAX_TGDSFILENAME_LENGTH];
+char *argvs[8];
+int TGDSProjectReturnFromLinkedModule(){
+	//Return from TGDS-LinkedModule? Restore services
+	u8 DSHardware = ARM7ReloadFlashSync();
+	IRQInit(DSHardware);
+	int ret=FS_init();
+	// Create Woopsi UI
+	WoopsiTemplate WoopsiTemplateApp;
+	WoopsiTemplateProc = &WoopsiTemplateApp;
+	int readaArgc = getGlobalArgc();
+	char** readaArgv = getGlobalArgv();
+	return WoopsiTemplateApp.main(readaArgc, readaArgv);
 }
 
 int main(int argc, char **argv) {

@@ -45,6 +45,9 @@ extern bool stopSoundStreamUser();
 extern void closeSoundUser();
 extern void TGDSMultibootRunNDSPayload(char * filename);
 
+//ToolchainGenericDS-LinkedModule User implementation: WoopsiTGDS
+extern char args[8][MAX_TGDSFILENAME_LENGTH];
+extern char *argvs[8];
 #ifdef __cplusplus
 }
 #endif
