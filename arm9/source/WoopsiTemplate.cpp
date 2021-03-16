@@ -88,7 +88,7 @@ void WoopsiTemplate::startup(int argc, char **argv) {
 	_fileScreen->insertGadget(new Gradient(0, SCREEN_TITLE_HEIGHT, 256, 192 - SCREEN_TITLE_HEIGHT, woopsiRGB(0, 31, 0), woopsiRGB(0, 0, 31)));
 	
 	// Create FileRequester
-	_fileReq = new FileRequester(10, 10, 150, 150, "Files", "/", GADGET_DRAGGABLE | GADGET_DOUBLE_CLICKABLE);
+	_fileReq = new FileRequester(7, 10, 250, 150, "Files", "/", GADGET_DRAGGABLE | GADGET_DOUBLE_CLICKABLE);
 	_fileReq->setRefcon(1);
 	_fileScreen->addGadget(_fileReq);
 	_fileReq->addGadgetEventHandler(this);
