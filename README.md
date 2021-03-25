@@ -24,4 +24,14 @@ Draw the pop up windows across the screen or scroll other windows to test touchs
 
 Note: UI Controls experimental.
 
+/release/arm9dldi-ntr contents:
+	- ToolchainGenericDS-template.nds: This homebrew; also known as TGDS Host App.
+	
+	- TGDS-lm-template.bin: ARM9 reloadable binary, implements https://bitbucket.org/Coto88/toolchaingenericds-linkedmodule/src
+	Usage: run TGDS project first, then reload it through the menu (either console or Woopsi UI), a new TGDS-LinkedModule ARM9 binary will reload. 
+	Read TGDS-LM program how to go back into TGDS Host App.
+	
+	- tgds_multiboot_payload.bin: TGDS-multiboot payload, allows to run NDS homebrew, requires by TGDS Host App.
+
+
 Coto
