@@ -24,7 +24,7 @@ Draw the pop up windows across the screen or scroll other windows to test touchs
 
 Note: UI Controls experimental.
 
-/release/arm9dldi-ntr contents:
+/release/arm7dldi-ntr contents:
 	- ToolchainGenericDS-template.nds: This homebrew; also known as TGDS Host App.
 	
 	- TGDS-lm-template.bin: ARM9 reloadable binary, implements https://bitbucket.org/Coto88/toolchaingenericds-linkedmodule/src
