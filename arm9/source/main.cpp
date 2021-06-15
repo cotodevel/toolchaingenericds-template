@@ -39,6 +39,8 @@ USA
 #include "click_raw.h"
 #include "ima_adpcm.h"
 #include "linkerTGDS.h"
+#include "dldi.h"
+#include "utils.twl.h"
 
 // Includes
 #include "WoopsiTemplate.h"
@@ -114,10 +116,12 @@ int main(int argc, char **argv) {
 	{
 		printf("FS Init error.");
 	}
-	switch_dswnifi_mode(dswifi_idlemode);
+	
+	switch_dswnifi_mode(dswifi_idlemode);	//TWL mode unimplemented
 	asm("mcr	p15, 0, r0, c7, c10, 4");
 	flush_icache_all();
 	flush_dcache_all();
+	
 	/*			TGDS 1.6 Standard ARM9 Init code end	*/
 	
 	//Show logo
