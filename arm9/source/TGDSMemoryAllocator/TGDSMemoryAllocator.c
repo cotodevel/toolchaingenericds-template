@@ -32,7 +32,7 @@ USA
 	////////[Custom Memory implementation ]////////
 
 //Definition that overrides the weaksymbol expected from toolchain to init ARM9's TGDS memory allocation
-struct AllocatorInstance * getProjectSpecificMemoryAllocatorSetup(u32 ARM7MallocStartAddress, int ARM7MallocSize, bool isCustomTGDSMalloc){
+struct AllocatorInstance * getProjectSpecificMemoryAllocatorSetup(u32 ARM7MallocStartAddress, int ARM7MallocSize, bool isCustomTGDSMalloc) __attribute__ ((optnone)) {
 	struct AllocatorInstance * customMemoryAllocator = &CustomAllocatorInstance;
 	memset((u8*)customMemoryAllocator, 0, sizeof(CustomAllocatorInstance));
 	customMemoryAllocator->customMalloc = isCustomTGDSMalloc;
@@ -40,7 +40,7 @@ struct AllocatorInstance * getProjectSpecificMemoryAllocatorSetup(u32 ARM7Malloc
 	customMemoryAllocator->ARM7MallocSize = ARM7MallocSize;
 	
 	customMemoryAllocator->ARM9MallocStartaddress = (u32)sbrk(0);
-	customMemoryAllocator->memoryToAllocate = (1024*1024);	//512K Alloc (Woopsi objects)
+	customMemoryAllocator->memoryToAllocate = (2048*1024);	//512K Alloc (Woopsi objects)
 	customMemoryAllocator->CustomTGDSMalloc9 = (TGDSARM9MallocHandler)&Xmalloc;
 	customMemoryAllocator->CustomTGDSCalloc9 = (TGDSARM9CallocHandler)&Xcalloc;
 	customMemoryAllocator->CustomTGDSFree9 = (TGDSARM9FreeHandler)&Xfree;
