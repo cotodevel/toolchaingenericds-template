@@ -26,10 +26,16 @@ public:
 	void waitForAOrTouchScreenButtonMessage(MultiLineTextBox* thisLineTextBox, const WoopsiString& thisText);
 	void handleLidClosed();
 	void handleLidOpen();
+	void ReportAvailableMem();
 	void ApplicationMainLoop();
 	FileRequester* _fileReq;
 	int currentFileRequesterIndex;
-	AmigaScreen* _fileScreen;
+	
+	AmigaScreen* _controlsScreen;	//Top Screen object
+	
+	AmigaWindow* _controlWindow;	//Top Screen Controls object
+	
+	AmigaScreen* _fileScreen;	//Bottom Screen object
 	MultiLineTextBox* _MultiLineTextBoxLogger;
 	Button* _Index;
 	Button* _lastFile;

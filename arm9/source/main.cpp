@@ -53,11 +53,11 @@ int internalCodecType = SRC_NONE; //Returns current sound stream format: WAV, AD
 struct fd * _FileHandleVideo = NULL; 
 struct fd * _FileHandleAudio = NULL;
 
-bool stopSoundStreamUser(){
+bool stopSoundStreamUser() __attribute__ ((optnone)) {
 	return stopSoundStream(_FileHandleVideo, _FileHandleAudio, &internalCodecType);
 }
 
-void closeSoundUser(){
+void closeSoundUser() __attribute__ ((optnone)) {
 	//Stubbed. Gets called when closing an audiostream of a custom audio decoder
 }
 
@@ -93,7 +93,7 @@ int TGDSProjectReturnFromLinkedModule() __attribute__ ((optnone)) {
 	return -1;
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv) __attribute__ ((optnone)) {
 	
 	/*			TGDS 1.6 Standard ARM9 Init code start	*/
 	bool isTGDSCustomConsole = false;	//set default console or custom console: default console

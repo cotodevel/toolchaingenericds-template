@@ -18,7 +18,7 @@
 __attribute__((section(".itcm")))
 WoopsiTemplate * WoopsiTemplateProc = NULL;
 
-void WoopsiTemplate::startup(int argc, char **argv) {
+void WoopsiTemplate::startup(int argc, char **argv) __attribute__ ((optnone)) {
 	
 	Rect rect;
 
@@ -33,50 +33,50 @@ void WoopsiTemplate::startup(int argc, char **argv) {
 	delete gfx;
 
 	// Create screens
-	AmigaScreen* newScreen = new AmigaScreen(TGDSPROJECTNAME, Gadget::GADGET_DRAGGABLE, AmigaScreen::AMIGA_SCREEN_SHOW_DEPTH | AmigaScreen::AMIGA_SCREEN_SHOW_FLIP);
-	woopsiApplication->addGadget(newScreen);
-	newScreen->setPermeable(true);
+	_controlsScreen = new AmigaScreen(TGDSPROJECTNAME, Gadget::GADGET_DRAGGABLE, AmigaScreen::AMIGA_SCREEN_SHOW_DEPTH | AmigaScreen::AMIGA_SCREEN_SHOW_FLIP);
+	woopsiApplication->addGadget(_controlsScreen);
+	_controlsScreen->setPermeable(true);
 
 	// Add child windows
-	AmigaWindow* controlWindow = new AmigaWindow(0, 13, 256, 33, "Controls", Gadget::GADGET_DRAGGABLE, AmigaWindow::AMIGA_WINDOW_SHOW_DEPTH);
-	newScreen->addGadget(controlWindow);
+	_controlWindow = new AmigaWindow(0, 13, 256, 33, "Controls", Gadget::GADGET_DRAGGABLE, AmigaWindow::AMIGA_WINDOW_SHOW_DEPTH);
+	_controlsScreen->addGadget(_controlWindow);
 
 	// Controls
-	controlWindow->getClientRect(rect);
+	_controlWindow->getClientRect(rect);
 
 	_Index = new Button(rect.x, rect.y, 41, 16, "Index");	//_Index->disable();
 	_Index->setRefcon(2);
-	controlWindow->addGadget(_Index);
+	_controlWindow->addGadget(_Index);
 	_Index->addGadgetEventHandler(this);
 	
 	_lastFile = new Button(rect.x + 41, rect.y, 17, 16, "<");
 	_lastFile->setRefcon(3);
-	controlWindow->addGadget(_lastFile);
+	_controlWindow->addGadget(_lastFile);
 	_lastFile->addGadgetEventHandler(this);
 	
 	_nextFile = new Button(rect.x + 41 + 17, rect.y, 17, 16, ">");
 	_nextFile->setRefcon(4);
-	controlWindow->addGadget(_nextFile);
+	_controlWindow->addGadget(_nextFile);
 	_nextFile->addGadgetEventHandler(this);
 	
 	_play = new Button(rect.x + 41 + 17 + 17, rect.y, 40, 16, "Play");
 	_play->setRefcon(5);
-	controlWindow->addGadget(_play);
+	_controlWindow->addGadget(_play);
 	_play->addGadgetEventHandler(this);
 	
 	_stop = new Button(rect.x + 41 + 17 + 17 + 40, rect.y, 40, 16, "Stop");
 	_stop->setRefcon(6);
-	controlWindow->addGadget(_stop);
+	_controlWindow->addGadget(_stop);
 	_stop->addGadgetEventHandler(this);
 	
 	_upVolume = new Button(rect.x + 41 + 17 + 17 + 40 + 40, rect.y, 40, 16, "Vol.+");
 	_upVolume->setRefcon(7);
-	controlWindow->addGadget(_upVolume);
+	_controlWindow->addGadget(_upVolume);
 	_upVolume->addGadgetEventHandler(this);
 	
 	_downVolume = new Button(rect.x + 41 + 17 + 17 + 40 + 40 + 40, rect.y, 40, 16, "Vol.-");
 	_downVolume->setRefcon(8);
-	controlWindow->addGadget(_downVolume);
+	_controlWindow->addGadget(_downVolume);
 	_downVolume->addGadgetEventHandler(this);
 	
 	// Add File listing screen
@@ -96,15 +96,33 @@ void WoopsiTemplate::startup(int argc, char **argv) {
 	
 	_MultiLineTextBoxLogger = NULL;	//destroyable TextBox
 	
+	ReportAvailableMem();
+	
 	enableDrawing();	// Ensure Woopsi can now draw itself
 	redraw();			// Draw initial state
 }
 
-void WoopsiTemplate::shutdown() {
+void WoopsiTemplate::ReportAvailableMem() __attribute__ ((optnone)) {
+	Rect rect;
+	_controlsScreen->getClientRect(rect);
+	_MultiLineTextBoxLogger = new MultiLineTextBox(rect.x, rect.y + 60, 200, 70, "DS Hardware status\n...", Gadget::GADGET_DRAGGABLE, 5);	// y + 60 px = move the rectangle vertically from parent obj
+	_controlsScreen->addGadget(_MultiLineTextBoxLogger);
+	
+	_MultiLineTextBoxLogger->removeText(0);
+	_MultiLineTextBoxLogger->moveCursorToPosition(0);
+	_MultiLineTextBoxLogger->appendText("Memory Status: ");
+	_MultiLineTextBoxLogger->appendText("\n");
+	
+	char arrBuild[256+1];
+	sprintf(arrBuild, "Available heap memory: %d", TGDSARM9MallocFreeMemory());
+	_MultiLineTextBoxLogger->appendText(WoopsiString(arrBuild));
+}
+
+void WoopsiTemplate::shutdown() __attribute__ ((optnone)) {
 	Woopsi::shutdown();
 }
 
-void WoopsiTemplate::waitForAOrTouchScreenButtonMessage(MultiLineTextBox* thisLineTextBox, const WoopsiString& thisText){
+void WoopsiTemplate::waitForAOrTouchScreenButtonMessage(MultiLineTextBox* thisLineTextBox, const WoopsiString& thisText) __attribute__ ((optnone)) {
 	thisLineTextBox->appendText(thisText);
 	scanKeys();
 	while((!(keysDown() & KEY_A)) && (!(keysDown() & KEY_TOUCH))){
@@ -116,7 +134,7 @@ void WoopsiTemplate::waitForAOrTouchScreenButtonMessage(MultiLineTextBox* thisLi
 	}
 }
 
-void WoopsiTemplate::handleValueChangeEvent(const GadgetEventArgs& e) {
+void WoopsiTemplate::handleValueChangeEvent(const GadgetEventArgs& e) __attribute__ ((optnone)) {
 
 	// Did a gadget fire this event?
 	if (e.getSource() != NULL) {
@@ -184,7 +202,7 @@ void WoopsiTemplate::handleValueChangeEvent(const GadgetEventArgs& e) {
 	}
 }
 
-void WoopsiTemplate::handleLidClosed() {
+void WoopsiTemplate::handleLidClosed() __attribute__ ((optnone)) {
 	// Lid has just been closed
 	_lidClosed = true;
 
@@ -196,7 +214,7 @@ void WoopsiTemplate::handleLidClosed() {
 	}
 }
 
-void WoopsiTemplate::handleLidOpen() {
+void WoopsiTemplate::handleLidOpen() __attribute__ ((optnone)) {
 	// Lid has just been opened
 	_lidClosed = false;
 
@@ -208,7 +226,7 @@ void WoopsiTemplate::handleLidOpen() {
 	}
 }
 
-void WoopsiTemplate::handleClickEvent(const GadgetEventArgs& e) __attribute__ ((optnone)) {
+void WoopsiTemplate::handleClickEvent(const GadgetEventArgs& e) __attribute__ ((optnone)) __attribute__ ((optnone)) {
 	switch (e.getSource()->getRefcon()) {
 		//_Index Event
 		case 2:{
@@ -289,7 +307,7 @@ char currentFileChosen[256+1];
 
 //Called once Woopsi events are ended: TGDS Main Loop
 __attribute__((section(".itcm")))
-void Woopsi::ApplicationMainLoop(){
+void Woopsi::ApplicationMainLoop() __attribute__ ((optnone)) {
 	//Earlier.. main from Woopsi SDK.
 	
 	//Handle TGDS stuff...
@@ -306,6 +324,7 @@ void Woopsi::ApplicationMainLoop(){
 			else{
 				pendPlay = 0;
 			}
+			WoopsiTemplateProc->ReportAvailableMem();
 		}
 		break;
 		case(2):{
