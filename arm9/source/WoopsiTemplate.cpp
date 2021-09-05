@@ -15,10 +15,17 @@
 #include "posixHandleTGDS.h"
 #include "keypadTGDS.h"
 
-__attribute__((section(".itcm")))
+__attribute__((section(".dtcm")))
 WoopsiTemplate * WoopsiTemplateProc = NULL;
 
-void WoopsiTemplate::startup(int argc, char **argv) __attribute__ ((optnone)) {
+#if (defined(__GNUC__) && !defined(__clang__))
+__attribute__((optimize("O0")))
+#endif
+
+#if (!defined(__GNUC__) && defined(__clang__))
+__attribute__ ((optnone))
+#endif
+void WoopsiTemplate::startup(int argc, char **argv) {
 	
 	Rect rect;
 
@@ -102,7 +109,14 @@ void WoopsiTemplate::startup(int argc, char **argv) __attribute__ ((optnone)) {
 	redraw();			// Draw initial state
 }
 
-void WoopsiTemplate::ReportAvailableMem() __attribute__ ((optnone)) {
+#if (defined(__GNUC__) && !defined(__clang__))
+__attribute__((optimize("O0")))
+#endif
+
+#if (!defined(__GNUC__) && defined(__clang__))
+__attribute__ ((optnone))
+#endif
+void WoopsiTemplate::ReportAvailableMem() {
 	Rect rect;
 	_controlsScreen->getClientRect(rect);
 	_MultiLineTextBoxLogger = new MultiLineTextBox(rect.x, rect.y + 60, 200, 70, "DS Hardware status\n...", Gadget::GADGET_DRAGGABLE, 5);	// y + 60 px = move the rectangle vertically from parent obj
@@ -118,11 +132,25 @@ void WoopsiTemplate::ReportAvailableMem() __attribute__ ((optnone)) {
 	_MultiLineTextBoxLogger->appendText(WoopsiString(arrBuild));
 }
 
-void WoopsiTemplate::shutdown() __attribute__ ((optnone)) {
+#if (defined(__GNUC__) && !defined(__clang__))
+__attribute__((optimize("O0")))
+#endif
+
+#if (!defined(__GNUC__) && defined(__clang__))
+__attribute__ ((optnone))
+#endif
+void WoopsiTemplate::shutdown() {
 	Woopsi::shutdown();
 }
 
-void WoopsiTemplate::waitForAOrTouchScreenButtonMessage(MultiLineTextBox* thisLineTextBox, const WoopsiString& thisText) __attribute__ ((optnone)) {
+#if (defined(__GNUC__) && !defined(__clang__))
+__attribute__((optimize("O0")))
+#endif
+
+#if (!defined(__GNUC__) && defined(__clang__))
+__attribute__ ((optnone))
+#endif
+void WoopsiTemplate::waitForAOrTouchScreenButtonMessage(MultiLineTextBox* thisLineTextBox, const WoopsiString& thisText) {
 	thisLineTextBox->appendText(thisText);
 	scanKeys();
 	while((!(keysDown() & KEY_A)) && (!(keysDown() & KEY_TOUCH))){
@@ -134,7 +162,14 @@ void WoopsiTemplate::waitForAOrTouchScreenButtonMessage(MultiLineTextBox* thisLi
 	}
 }
 
-void WoopsiTemplate::handleValueChangeEvent(const GadgetEventArgs& e) __attribute__ ((optnone)) {
+#if (defined(__GNUC__) && !defined(__clang__))
+__attribute__((optimize("O0")))
+#endif
+
+#if (!defined(__GNUC__) && defined(__clang__))
+__attribute__ ((optnone))
+#endif
+void WoopsiTemplate::handleValueChangeEvent(const GadgetEventArgs& e) {
 
 	// Did a gadget fire this event?
 	if (e.getSource() != NULL) {
@@ -202,7 +237,14 @@ void WoopsiTemplate::handleValueChangeEvent(const GadgetEventArgs& e) __attribut
 	}
 }
 
-void WoopsiTemplate::handleLidClosed() __attribute__ ((optnone)) {
+#if (defined(__GNUC__) && !defined(__clang__))
+__attribute__((optimize("O0")))
+#endif
+
+#if (!defined(__GNUC__) && defined(__clang__))
+__attribute__ ((optnone))
+#endif
+void WoopsiTemplate::handleLidClosed() {
 	// Lid has just been closed
 	_lidClosed = true;
 
@@ -214,7 +256,14 @@ void WoopsiTemplate::handleLidClosed() __attribute__ ((optnone)) {
 	}
 }
 
-void WoopsiTemplate::handleLidOpen() __attribute__ ((optnone)) {
+#if (defined(__GNUC__) && !defined(__clang__))
+__attribute__((optimize("O0")))
+#endif
+
+#if (!defined(__GNUC__) && defined(__clang__))
+__attribute__ ((optnone))
+#endif
+void WoopsiTemplate::handleLidOpen() {
 	// Lid has just been opened
 	_lidClosed = false;
 
@@ -226,7 +275,14 @@ void WoopsiTemplate::handleLidOpen() __attribute__ ((optnone)) {
 	}
 }
 
-void WoopsiTemplate::handleClickEvent(const GadgetEventArgs& e) __attribute__ ((optnone)) __attribute__ ((optnone)) {
+#if (defined(__GNUC__) && !defined(__clang__))
+__attribute__((optimize("O0")))
+#endif
+
+#if (!defined(__GNUC__) && defined(__clang__))
+__attribute__ ((optnone))
+#endif
+void WoopsiTemplate::handleClickEvent(const GadgetEventArgs& e) {
 	switch (e.getSource()->getRefcon()) {
 		//_Index Event
 		case 2:{
@@ -307,7 +363,14 @@ char currentFileChosen[256+1];
 
 //Called once Woopsi events are ended: TGDS Main Loop
 __attribute__((section(".itcm")))
-void Woopsi::ApplicationMainLoop() __attribute__ ((optnone)) {
+#if (defined(__GNUC__) && !defined(__clang__))
+__attribute__((optimize("O0")))
+#endif
+
+#if (!defined(__GNUC__) && defined(__clang__))
+__attribute__ ((optnone))
+#endif
+void Woopsi::ApplicationMainLoop() {
 	//Earlier.. main from Woopsi SDK.
 	
 	//Handle TGDS stuff...
