@@ -2,9 +2,9 @@
 
 ![ToolchainGenericDS](img/TGDS-WoopsiUI-example.png)
 
-NTR/TWL SDK: TGDS1.64
+NTR/TWL SDK: TGDS1.65
 
-master: Development branch. Use TGDS1.64Stable: branch for stable features.
+master: Development branch. Use TGDS1.65: branch for stable features.
 
 This is the ToolchainGenericDS Woopsi template project:
 
@@ -37,7 +37,7 @@ Note: UI Controls experimental.
 	
 	- tgds_multiboot_payload.bin: TGDS-multiboot payload, allows to run NDS homebrew, requires by TGDS Host App.
 
-Latest stable release: https://bitbucket.org/Coto88/ToolchainGenericDS-template/get/TGDS1.64Stable.zip
+Latest stable release: https://bitbucket.org/Coto88/ToolchainGenericDS-template/get/TGDS1.65.zip
 
 
 Coto
