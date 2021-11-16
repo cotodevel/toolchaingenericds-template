@@ -188,15 +188,7 @@ void WoopsiTemplate::handleValueChangeEvent(const GadgetEventArgs& e) {
 			strcpy(tmpName, currentFileChosen);
 			separateExtension(tmpName, ext);
 			strlwr(ext);
-			if(strncmp(ext,".nds", 4) == 0){
-				char thisArgv[3][MAX_TGDSFILENAME_LENGTH];
-				memset(thisArgv, 0, sizeof(thisArgv));
-				strcpy(&thisArgv[0][0], currentFileChosen);	//Arg0:	NDS Binary loaded
-				strcpy(&thisArgv[1][0], "");				//Arg1: ARGV0
-				addARGV(2, (char*)&thisArgv);
-				TGDSMultibootRunNDSPayload(currentFileChosen);
-			}
-			else if(strncmp(ext,".bin", 4) == 0){
+			if(strncmp(ext,".bin", 4) == 0){
 				int argCount = 2;	
 				strcpy(&args[0][0], TGDSPROJECTNAME);	//Arg0: Parent TGDS Project name
 				strcpy(&args[1][0], currentFileChosen);	//Arg1: self TGDS-LinkedModule filename
@@ -208,8 +200,17 @@ void WoopsiTemplate::handleValueChangeEvent(const GadgetEventArgs& e) {
 				
 				TGDSProjectRunLinkedModule(currentFileChosen, argCount, argvs, TGDSPROJECTNAME);
 			}
-			pendPlay = 1;
-
+			else{
+				char thisArgv[3][MAX_TGDSFILENAME_LENGTH];
+				memset(thisArgv, 0, sizeof(thisArgv));
+				strcpy(&thisArgv[0][0], currentFileChosen);	//Arg0:	NDS Binary loaded
+				strcpy(&thisArgv[1][0], "");				//Arg1: ARGV0
+				addARGV(2, (char*)&thisArgv);
+				if(TGDSMultibootRunNDSPayload(currentFileChosen) == false){  //Should fail it returns false. (Audio track)
+					pendPlay = 1;
+				}
+			}
+			
 			/* 
 			//Destroyable Textbox implementation init
 			Rect rect;
