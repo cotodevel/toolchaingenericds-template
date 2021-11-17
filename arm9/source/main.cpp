@@ -143,9 +143,8 @@ int main(int argc, char **argv) {
 	{
 		printf("FS Init ok.");
 	}
-	else if(ret == -1)
-	{
-		printf("FS Init error.");
+	else{
+		printf("FS Init error: %d", ret);
 	}
 	
 	asm("mcr	p15, 0, r0, c7, c10, 4");
