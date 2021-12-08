@@ -48,6 +48,8 @@ USA
 #include "nds_cp15_misc.h"
 #include "fatfslayerTGDS.h"
 
+#include <stdio.h>
+
 //TGDS Soundstreaming API
 int internalCodecType = SRC_NONE; //Returns current sound stream format: WAV, ADPCM or NONE
 struct fd * _FileHandleVideo = NULL; 
