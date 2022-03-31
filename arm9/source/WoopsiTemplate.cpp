@@ -14,6 +14,7 @@
 #include "main.h"
 #include "posixHandleTGDS.h"
 #include "keypadTGDS.h"
+#include "arm7vpntr.h"
 
 __attribute__((section(".dtcm")))
 WoopsiTemplate * WoopsiTemplateProc = NULL;
@@ -198,7 +199,10 @@ void WoopsiTemplate::handleValueChangeEvent(const GadgetEventArgs& e) {
 					argvs[i] = (char*)&args[i][0];
 				}
 				
-				TGDSProjectRunLinkedModule(currentFileChosen, argCount, argvs, TGDSPROJECTNAME);
+				//Hardcoded TGDS-Videoplayer ARM7 NTR Build Date: 29th March 2022
+				u32 arm7EntryAddress = 0x03800000;
+				u32 arm7BootCodeSize = 55376;
+				TGDSProjectRunLinkedModule(currentFileChosen, argCount, argvs, TGDSPROJECTNAME, (u8*)&arm7vpntr[0], arm7vpntr_size, arm7EntryAddress, arm7BootCodeSize);
 			}
 			else{
 				char thisArgv[3][MAX_TGDSFILENAME_LENGTH];
