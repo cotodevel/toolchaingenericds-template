@@ -188,19 +188,7 @@ void WoopsiTemplate::handleValueChangeEvent(const GadgetEventArgs& e) {
 			strcpy(tmpName, currentFileChosen);
 			separateExtension(tmpName, ext);
 			strlwr(ext);
-			if(strncmp(ext,".bin", 4) == 0){
-				int argCount = 2;	
-				strcpy(&args[0][0], TGDSPROJECTNAME);	//Arg0: Parent TGDS Project name
-				strcpy(&args[1][0], currentFileChosen);	//Arg1: self TGDS-LinkedModule filename
-				
-				int i = 0;
-				for(i = 0; i < argCount; i++){
-					argvs[i] = (char*)&args[i][0];
-				}
-				
-				TGDSProjectRunLinkedModule(currentFileChosen, argCount, argvs, TGDSPROJECTNAME, 0, 0, 0, 0);
-			}
-			else{
+			{
 				char thisArgv[3][MAX_TGDSFILENAME_LENGTH];
 				memset(thisArgv, 0, sizeof(thisArgv));
 				strcpy(&thisArgv[0][0], TGDSPROJECTNAME);	//Arg0:	This Binary loaded
