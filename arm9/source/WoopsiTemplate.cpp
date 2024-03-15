@@ -15,6 +15,7 @@
 #include "posixHandleTGDS.h"
 #include "keypadTGDS.h"
 #include "ipcfifoTGDSUser.h"
+#include "loader.h"
 
 __attribute__((section(".dtcm")))
 WoopsiTemplate * WoopsiTemplateProc = NULL;

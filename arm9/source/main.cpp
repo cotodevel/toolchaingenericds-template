@@ -42,6 +42,7 @@ USA
 #include "dldi.h"
 #include "utils.twl.h"
 #include "spitscTGDS.h"
+#include "loader.h"
 
 // Includes
 #include "WoopsiTemplate.h"
