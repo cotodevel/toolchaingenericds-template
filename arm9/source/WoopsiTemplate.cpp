@@ -196,8 +196,8 @@ void WoopsiTemplate::handleValueChangeEvent(const GadgetEventArgs& e) {
 				strcpy(&thisArgv[0][0], TGDSPROJECTNAME);	//Arg0:	This Binary loaded
 				strcpy(&thisArgv[1][0], currentFileChosen);	//Arg1:	NDS Binary reloaded
 				strcpy(&thisArgv[2][0], "");					//Arg2: NDS Binary ARG0
-				addARGV(3, (char*)&thisArgv);
-				if(TGDSMultibootRunNDSPayload(currentFileChosen) == false){  //Should fail it returns false. (Audio track)
+				u32 * payload = getTGDSMBV3ARM7Bootloader();
+				if(TGDSMultibootRunNDSPayload(currentFileChosen, (u8*)payload, 3, (char*)&thisArgv) == false){  //Should fail it returns false. (Audio track)
 					pendPlay = 1;
 				}
 			}
