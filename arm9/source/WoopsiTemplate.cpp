@@ -185,21 +185,32 @@ void WoopsiTemplate::handleValueChangeEvent(const GadgetEventArgs& e) {
 			strObj.copyToCharArray(currentFileChosen);
 			
 			//Boot .NDS file! (homebrew only)
-			char tmpName[256];
-			char ext[256];
-			strcpy(tmpName, currentFileChosen);
-			separateExtension(tmpName, ext);
-			strlwr(ext);
-			{
+			bool isTGDSTWLHomebrew = false;
+			int isNTRTWLBinary = isNTROrTWLBinary(currentFileChosen, &isTGDSTWLHomebrew);
+			if(isNTRTWLBinary != notTWLOrNTRBinary){
 				char thisArgv[3][MAX_TGDSFILENAME_LENGTH];
 				memset(thisArgv, 0, sizeof(thisArgv));
-				strcpy(&thisArgv[0][0], TGDSPROJECTNAME);	//Arg0:	This Binary loaded
-				strcpy(&thisArgv[1][0], currentFileChosen);	//Arg1:	NDS Binary reloaded
-				strcpy(&thisArgv[2][0], "");					//Arg2: NDS Binary ARG0
+				strcpy(&thisArgv[0][0], "");	//Arg0:	This Binary loaded
+				strcpy(&thisArgv[1][0], "");	//Arg1:	NDS Binary reloaded
+				strcpy(&thisArgv[2][0], "");					//Arg2: NDS Binary ARG0		
 				u32 * payload = getTGDSMBV3ARM7Bootloader();
-				if(TGDSMultibootRunNDSPayload(currentFileChosen, (u8*)payload, 3, (char*)&thisArgv) == false){  //Should fail it returns false. (Audio track)
-					pendPlay = 1;
+				if(TGDSMultibootRunNDSPayload(currentFileChosen, (u8*)payload, 0, (char*)&thisArgv) == false){ //should never reach here, nor even return true. Should fail it returns false
+					Rect rect;
+					_fileScreen->getClientRect(rect);
+					_MultiLineTextBoxLogger = new MultiLineTextBox(rect.x, rect.y, 262, 170, "Loading\n...", Gadget::GADGET_DRAGGABLE, 5);
+					_fileScreen->addGadget(_MultiLineTextBoxLogger);
+					
+					_MultiLineTextBoxLogger->removeText(0);
+					_MultiLineTextBoxLogger->moveCursorToPosition(0);
+					_MultiLineTextBoxLogger->appendText("Failed booting NDS/TWL Binary \n ");
+					_MultiLineTextBoxLogger->appendText(currentFileChosen);
+					_MultiLineTextBoxLogger->appendText("\n");
+					waitForAOrTouchScreenButtonMessage(_MultiLineTextBoxLogger, "Press (A) or tap touchscreen to continue. \n");
+					_MultiLineTextBoxLogger->invalidateVisibleRectCache();
+					_fileScreen->eraseGadget(_MultiLineTextBoxLogger);
+					_MultiLineTextBoxLogger->destroy();
 				}
+				
 			}
 			
 			/* 
