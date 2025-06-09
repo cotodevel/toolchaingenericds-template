@@ -26,6 +26,7 @@ USA
 #include "utilsTGDS.h"
 #include "limitsTGDS.h"
 #include "dldi.h"
+#include "TGDS_threads.h"
 
 #endif
 
@@ -44,6 +45,8 @@ extern struct fd * _FileHandleVideo;
 extern struct fd * _FileHandleAudio;
 extern bool stopSoundStreamUser();
 extern void closeSoundUser();
+
+extern struct task_Context * internalTGDSThreads;
 
 #ifdef __cplusplus
 }
