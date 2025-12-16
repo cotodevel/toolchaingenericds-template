@@ -62,6 +62,23 @@ OBJDIR 	=	./$(BUILD)
 VPATH 	=	$(DIR_SRC)	
 OBJPROG = 	$(addprefix $(OBJDIR)/, $(NONSTRIPELF_ARM9))
 
+ifeq ($(TGDS_PROJECT_COMPILER),clang)
+LD2 := $(CC)
+AR2 := llvm-ar
+DEP_CFLAGS := -MT $@ -MMD -MP
+
+#CFLAGS which can provided from the CLI, They will be appended last and will consequently override, any pre-existing settings
+CLI_CFLAG_OVERRIDES ?=
+CLI_LDFLAG_OVERRIDES ?=
+
+#Note: These arguments will be used by clang to select the specific architecture target when we use the generic --target=arm-none-eabi
+ARCH_CFLAGS += -marm -mcpu=arm946e-s -mfpu=none
+
+COMPILER_SPECIFIC_CFLAGS += --target=arm-none-eabi --sysroot= -Oz -DARM9	-DTGDSPROJECTNAME='"$(TGDSPROJECTNAME)"'
+
+CFLAGS = -g3 -nostdlib -fshort-enums $(COMPILER_SPECIFIC_CFLAGS) $(ARCH_CFLAGS) $(NEWLIB_NANO_COMPILE_FLAGS_C_9) $(CLI_CFLAG_OVERRIDES)	
+
+endif
 
 all: makebuild	$(TARGET_LIBRARY_CRT0_FILE_9).o	$(BINSTRIP_RULE_9)
 #all: debug
@@ -96,13 +113,21 @@ $(OBJDIR)/%.o : %.pcx
 #Do C Compile now!
 $(OBJDIR)/%.o : %.c
 	-@echo 'C Compile start: $@'
+ifeq ($(TGDS_PROJECT_COMPILER),clang)
+	$(CC_CLANG) $(DEP_CFLAGS) $(CFLAGS) $(DIRLIBS_HDR) $(DIRLIBS_SRC)	-c -o $@ $< 
+else
 	$(CC)	$(CC_ASFLAGS)	$(DIRLIBS_HDR)	$(DIRLIBS_SRC)	-o $@ -c $<
+endif
 	-@echo 'C Compile End: $@'
 
 #Do C++ (CXX) Compile now!
 $(OBJDIR)/%.o : %.cpp
 	-@echo 'C++ Compile start: $@'
+ifeq ($(TGDS_PROJECT_COMPILER),clang)
+	$(CC_CLANG) $(DEP_CFLAGS) $(CFLAGS) $(DIRLIBS_HDR) $(DIRLIBS_SRC)	-c -o $@ $< 
+else
 	$(CPP)	$(CPP_FLAGS)	$(DIRLIBS_HDR)	$(DIRLIBS_SRC)	-o	$@	-c	$<
+endif
 	-@echo 'C Compile End: $@'
 
 #Coto: Special "exception" rule. Fixes tricky projects such as SnemulDS's opcodes2.s where GCC AS is used, while compatibility with .S is required for newer projects.
@@ -133,8 +158,16 @@ $(TARGET_LIBRARY_CRT0_FILE_9).o:	$(TARGET_LIBRARY_LINKER_FILE_9)
 #Linkage. 
 $(OBJPROG): $(addprefix $(OBJDIR)/, $(OBJECTS))
 	-@echo 'Entering Linking phase'
+ifeq ($(TGDS_PROJECT_COMPILER),clang)
+	-$(LD2) $^	$(LDFLAGS)	$(DIRLIBS_HDR)	$(DIRLIBS_SRC)	$(DIRLIBS_SHARED)	-L	$(TARGET_LIBRARY_PATH)/	-L	$(TOOLCHAIN_PATH)/		$(LIBRARIES_NTR)	-L	$(TARGET_LIBRARY_LINKER_PATH_LD)	-o $@
+	-$(LD2) $^	$(LDFLAGS_DSI)	$(DIRLIBS_HDR)	$(DIRLIBS_SRC)	$(DIRLIBS_SHARED)	-L	$(TARGET_LIBRARY_PATH)/	-L	$(TOOLCHAIN_PATH)/		$(LIBRARIES_TWL)	-L	$(TARGET_LIBRARY_LINKER_PATH_LD)	-o ${@:.elf=_dsi.elf}
+endif
+
+ifneq ($(TGDS_PROJECT_COMPILER),clang)
 	-$(CC) $^	$(LDFLAGS)	$(DIRLIBS_HDR)	$(DIRLIBS_SRC)	$(DIRLIBS_SHARED)	-L	$(TARGET_LIBRARY_PATH)/	-L	$(TOOLCHAIN_PATH)/		$(LIBRARIES_NTR)	-L	$(TARGET_LIBRARY_LINKER_PATH_LD)	-o $@
 	-$(CC) $^	$(LDFLAGS_DSI)	$(DIRLIBS_HDR)	$(DIRLIBS_SRC)	$(DIRLIBS_SHARED)	-L	$(TARGET_LIBRARY_PATH)/	-L	$(TOOLCHAIN_PATH)/		$(LIBRARIES_TWL)	-L	$(TARGET_LIBRARY_LINKER_PATH_LD)	-o ${@:.elf=_dsi.elf}
+endif
+
 	-@echo 'Leaving Linking phase. Output: $@'
 
 #xxxx-nonstripped.elf -> xxxx.elf STRIP operation

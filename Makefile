@@ -40,6 +40,8 @@ export EXECUTABLE_VERSION =	"$(EXECUTABLE_VERSION_HEADER)"
 export TGDSPKG_TARGET_PATH := '//'
 export TGDSREMOTEBOOTER_SERVER_IP_ADDR := '192.168.43.185'
 export TGDSREMOTEBOOTER_SERVER_PORT := 1040
+export TGDS_PROJECT_COMPILER := clang
+
 #The ndstool I use requires to have the elf section removed, so these rules create elf headerless- binaries.
 export DIR_ARM7 = arm7
 export BUILD_ARM7	=	build
