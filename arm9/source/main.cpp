@@ -41,8 +41,8 @@ USA
 #include <stdio.h>
 
 //TGDS-MB ARM7 Bootldr (embedded ARM7 VRAM core)
-#include "arm7bootldr_standalone.h"
-#include "arm7bootldr_standalone_twl.h"
+#include "arm7bootldr.h"
+#include "arm7bootldr_twl.h"
 
 #ifdef ARM9
 __attribute__((section(".dtcm")))
@@ -51,11 +51,12 @@ struct task_Context * internalTGDSThreads = NULL;
 
 u32 * getTGDSARM7VRAMCore(){	//Required by ToolchainGenericDS-multiboot v3
 	if(__dsimode == false){
-		return (u32*)&arm7bootldr_standalone[0];	
+		swiDecompressLZSSWram((u8*)&arm7bootldr[0], (u8*)TGDS_MB_V3_ARM7_SCRATCHPAD_LZSS_DECOMP_BUF);
 	}
 	else{
-		return (u32*)&arm7bootldr_standalone_twl[0];
+		swiDecompressLZSSWram((u8*)&arm7bootldr_twl[0], (u8*)TGDS_MB_V3_ARM7_SCRATCHPAD_LZSS_DECOMP_BUF);
 	}
+	return (u32*)TGDS_MB_V3_ARM7_SCRATCHPAD_LZSS_DECOMP_BUF;
 }
 
 //TGDS Soundstreaming API
