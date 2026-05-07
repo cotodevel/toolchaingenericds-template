@@ -341,18 +341,14 @@ void WoopsiTemplate::handleClickEvent(const GadgetEventArgs& e) {
 		
 		//_upVolume Event
 		case 7:{
-			struct touchPosition touch;
-			XYReadScrPosUser(&touch);
-			volumeUp(touch.px, touch.py);
+			volumeUp();
 			
 		}	
 		break;
 		
 		//_downVolume Event
 		case 8:{
-			struct touchPosition touch;
-			XYReadScrPosUser(&touch);
-			volumeDown(touch.px, touch.py);
+			volumeDown();
 		}	
 		break;
 		
